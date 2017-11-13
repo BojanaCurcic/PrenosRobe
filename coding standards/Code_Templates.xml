@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><templates><template autoinsert="false" context="gettercomment_context" deleted="false" description="Comment for getter method" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.gettercomment" name="gettercomment">/**
+ * @brief	$$brief_line$$
+ *
+ *	$$details_block$$
+ *
+ * @return	$$returnMeaning_block$$
+ *
+ */</template><template autoinsert="false" context="settercomment_context" deleted="false" description="Comment for setter method" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.settercomment" name="settercomment">/**
+ * @brief	$$brief_line$$
+ *
+ *	$$details_block$$
+ *
+ * @param	${param}
+ * 			$$paramMeaning_block$$
+ *
+ */</template><template autoinsert="false" context="constructorcomment_context" deleted="false" description="Comment for created constructors" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.constructorcomment" name="constructorcomment">/**
+ * @brief	$$brief_line$$
+ *
+ * @pre		$$precondition_block$$
+ * @post	$$postcondition_block$$
+ *
+ * $$details_block$$
+ *
+ * @param 	$$paramName$$ 
+ *			$$paramMeaning_block$$
+ *
+ */</template><template autoinsert="false" context="filecomment_context" deleted="false" description="Comment for created Java files" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.filecomment" name="filecomment">/**
+ * @file ${file_name}
+ * @brief $$brief_line$$
+ *
+ * &lt;b&gt; Copyright(c) Cirrus Logic Corporation 2009, All Rights Reserved. &lt;/b&gt;&lt;p&gt;
+ * THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+ * ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ * 
+ * Use of this source code is subject to the terms of the Cirrus end-user
+ * license agreement (EULA) under which you licensed this SOFTWARE PRODUCT.
+ * If you did not accept the terms of the EULA, you are not authorized to 
+ * use this source code. For a copy of the EULA, please see the 
+ * LICENSE.RTF on your install media.
+ *
+ * Project/Subproject: CLIDE/$$subproject$$ &lt;p&gt;
+ * Component: $$component$$
+ * @version $$version_block$$
+ *
+ * @author $$author_block$$
+ * @since $$since_block$$
+ *
+ * Language: English, Code page: ASCII, Coding standard: MG-JAVA-DOXY-OCT08 &lt;p&gt;
+ *
+ * &lt;b&gt; Related external documentation: &lt;/b&gt;&lt;p&gt;
+ * &lt;i&gt; Entry format: Type, Location/Name, Description &lt;/i&gt;
+ *
+ */</template><template autoinsert="false" context="typecomment_context" deleted="false" description="Comment for created types" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.typecomment" name="typecomment">/**
+ * @class ${type_name}
+ * @brief $$brief_line$$
+ *
+ * $$details_block$$
+ *
+ */</template><template autoinsert="false" context="fieldcomment_context" deleted="false" description="Comment for fields" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.fieldcomment" name="fieldcomment">/**&lt; $$details_line$$ */</template><template autoinsert="false" context="methodcomment_context" deleted="false" description="Comment for non-overriding methods" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.methodcomment" name="methodcomment">/**
+ * @brief 	$$brief_line$$
+ *
+ * @pre		$$precondition_block$$
+ * @post	$$postcondition_block$$
+ *
+ * $$details_block$$
+ *
+ * @param	$$paramName$$ 
+ *			$$paramMeaning_block$$
+ *
+ * @return	$$returnMeaning_block$$
+ *
+ * @exception	$$exception_block$$
+ *
+ */</template><template autoinsert="true" context="overridecomment_context" deleted="false" description="Comment for overriding methods" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.overridecomment" name="overridecomment">/* (non-Javadoc)
+ * ${see_to_overridden}
+ */</template><template autoinsert="true" context="delegatecomment_context" deleted="false" description="Comment for delegate methods" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.delegatecomment" name="delegatecomment">/**
+ * ${tags}
+ * ${see_to_target}
+ */</template><template autoinsert="true" context="newtype_context" deleted="false" description="Newly created files" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.newtype" name="newtype">${filecomment}
+${package_declaration}
+
+${typecomment}
+${type_declaration}</template><template autoinsert="true" context="classbody_context" deleted="false" description="Code in new class type bodies" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.classbody" name="classbody">
+</template><template autoinsert="true" context="interfacebody_context" deleted="false" description="Code in new interface type bodies" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.interfacebody" name="interfacebody">
+</template><template autoinsert="true" context="enumbody_context" deleted="false" description="Code in new enum type bodies" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.enumbody" name="enumbody">
+</template><template autoinsert="true" context="annotationbody_context" deleted="false" description="Code in new annotation type bodies" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.annotationbody" name="annotationbody">
+</template><template autoinsert="true" context="catchblock_context" deleted="false" description="Code in new catch blocks" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.catchblock" name="catchblock">// ${todo} Auto-generated catch block
+${exception_var}.printStackTrace();</template><template autoinsert="true" context="methodbody_context" deleted="false" description="Code in created method stubs" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.methodbody" name="methodbody">// ${todo} Auto-generated method stub
+${body_statement}</template><template autoinsert="true" context="constructorbody_context" deleted="false" description="Code in created constructor stubs" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.constructorbody" name="constructorbody">${body_statement}
+// ${todo} Auto-generated constructor stub</template><template autoinsert="true" context="getterbody_context" deleted="false" description="Code in created getters" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.getterbody" name="getterbody">return ${field};</template><template autoinsert="true" context="setterbody_context" deleted="false" description="Code in created setters" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.setterbody" name="setterbody">${field} = ${param};</template></templates>
