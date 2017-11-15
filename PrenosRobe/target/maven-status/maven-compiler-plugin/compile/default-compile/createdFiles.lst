@@ -1,7 +1,7 @@
-main\java\com\prenosrobe\deo\ClaimerOffer.class
-main\java\com\prenosrobe\deo\DriverOffer.class
-main\java\com\prenosrobe\deo\Station.class
-main\java\com\prenosrobe\app\App.class
-main\java\com\prenosrobe\deo\OfferStatus.class
-main\java\com\prenosrobe\deo\Impression.class
-main\java\com\prenosrobe\deo\User.class
+com\prenosrobe\deo\Impression.class
+com\prenosrobe\deo\ClaimerOffer.class
+com\prenosrobe\deo\Station.class
+com\prenosrobe\deo\User.class
+com\prenosrobe\app\App.class
+com\prenosrobe\deo\OfferStatus.class
+com\prenosrobe\deo\DriverOffer.class
