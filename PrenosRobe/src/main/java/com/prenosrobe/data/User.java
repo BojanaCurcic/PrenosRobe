@@ -1,20 +1,23 @@
-package com.prenosrobe.deo;
+package com.prenosrobe.data;
 
-import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "user")
 public class User
 {
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "user_id")
 	private int id;
 
@@ -40,19 +43,64 @@ public class User
 	private String photo;
 
 	@Column(name = "active")
-	private boolean active;
+	private boolean active = true;
 
 	@Column(name = "created_at")
-	private Date createdAt;
+	private Date createdAt = new Date();
 
-	@OneToMany
+	// @OneToMany(mappedBy = "user")
+	@Transient
 	private List<Impression> impressions = new ArrayList<Impression>();
 
-	@OneToMany
+	@Transient
 	private List<DriverOffer> driverOffers = new ArrayList<DriverOffer>();
 
-	@OneToMany
+	@Transient
 	private List<ClaimerOffer> claimerOffers = new ArrayList<ClaimerOffer>();
+
+	/**
+	 * Instantiate a new user.
+	 *
+	 * @param name name
+	 * @param surname surname
+	 * @param username username
+	 * @param password password
+	 * @param email email
+	 * @param phoneNumber phone number
+	 */
+	public User(final String name, final String surname, final String username,
+			final String password, final String email, final String phoneNumber)
+	{
+		this.name = name;
+		this.surname = surname;
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+	}
+
+	/**
+	 * Instantiate a new user.
+	 *
+	 * @param name name
+	 * @param surname surname
+	 * @param username username
+	 * @param password password
+	 * @param email email
+	 * @param phoneNumber phone number
+	 * @param photo photo
+	 */
+	public User(final String name, final String surname, final String username,
+			final String password, final String email, final String phoneNumber, final String photo)
+	{
+		this.name = name;
+		this.surname = surname;
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.photo = photo;
+	}
 
 	/**
 	 * Get the id.
@@ -275,6 +323,26 @@ public class User
 	}
 
 	/**
+	 * Add the new impression.
+	 *
+	 * @param impression new impression
+	 */
+	public void addImpression(final Impression impression)
+	{
+		this.impressions.add(impression);
+	}
+
+	/**
+	 * Remove the impression.
+	 *
+	 * @param impression impression
+	 */
+	public void removeImpression(final Impression impression)
+	{
+		this.impressions.remove(impression);
+	}
+
+	/**
 	 * Get the driver offers.
 	 *
 	 * @return driver offers
@@ -295,6 +363,26 @@ public class User
 	}
 
 	/**
+	 * Add the new driver offer.
+	 *
+	 * @param driverOffer new driver offer
+	 */
+	public void addDriverOffer(final DriverOffer driverOffer)
+	{
+		this.driverOffers.add(driverOffer);
+	}
+
+	/**
+	 * Remove the driver offer.
+	 *
+	 * @param driverOffer driver offer
+	 */
+	public void removeDriverOffer(final DriverOffer driverOffer)
+	{
+		this.driverOffers.remove(driverOffer);
+	}
+
+	/**
 	 * Get the claimer offers.
 	 *
 	 * @return claimer offers
@@ -312,5 +400,25 @@ public class User
 	public void setClaimerOffers(final List<ClaimerOffer> claimerOffers)
 	{
 		this.claimerOffers = claimerOffers;
+	}
+
+	/**
+	 * Add the new claimer offer.
+	 *
+	 * @param claimerOffer new claimer offer
+	 */
+	public void addClaimerOffer(final ClaimerOffer claimerOffer)
+	{
+		this.claimerOffers.add(claimerOffer);
+	}
+
+	/**
+	 * Remove the claimer offer.
+	 *
+	 * @param claimerOffer claimer offer
+	 */
+	public void removeClaimerOffer(final ClaimerOffer claimerOffer)
+	{
+		this.claimerOffers.remove(claimerOffer);
 	}
 }

@@ -1,31 +1,44 @@
-package com.prenosrobe.deo;
+package com.prenosrobe.data;
 
-import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "offer_status")
 public class OfferStatus
 {
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "offer_status_id")
 	private int id;
 
 	@Column(name = "created_at")
-	private Date createdAt;
+	private Date createdAt = new Date();
 
 	@Column(name = "name")
 	private String name;
 
-	@OneToMany
-	private List<ClaimerOffer> claimerOffer = new ArrayList<ClaimerOffer>();
+	@Transient
+	private List<ClaimerOffer> claimerOffers = new ArrayList<ClaimerOffer>();
+
+	/**
+	 * Instantiate a new offer status.
+	 *
+	 * @param name name
+	 */
+	public OfferStatus(String name)
+	{
+		this.name = name;
+	}
 
 	/**
 	 * Get the id.
@@ -88,22 +101,42 @@ public class OfferStatus
 	}
 
 	/**
-	 * Get the claimer offer.
+	 * Get the claimer offers.
 	 *
-	 * @return claimer offer
+	 * @return claimer offers
 	 */
-	public List<ClaimerOffer> getClaimerOffer()
+	public List<ClaimerOffer> getClaimerOffers()
 	{
-		return claimerOffer;
+		return claimerOffers;
 	}
 
 	/**
-	 * Set the claimer offer.
+	 * Set the claimer offers.
+	 *
+	 * @param claimerOffers new claimer offers
+	 */
+	public void setClaimerOffers(final List<ClaimerOffer> claimerOffers)
+	{
+		this.claimerOffers = claimerOffers;
+	}
+
+	/**
+	 * Add the new claimer offer.
 	 *
 	 * @param claimerOffer new claimer offer
 	 */
-	public void setClaimerOffer(final List<ClaimerOffer> claimerOffer)
+	public void addClaimerOffer(final ClaimerOffer claimerOffer)
 	{
-		this.claimerOffer = claimerOffer;
+		this.claimerOffers.add(claimerOffer);
+	}
+
+	/**
+	 * Remove the claimer offer.
+	 *
+	 * @param claimerOffer claimer offer
+	 */
+	public void removeClaimerOffer(final ClaimerOffer claimerOffer)
+	{
+		this.claimerOffers.remove(claimerOffer);
 	}
 }

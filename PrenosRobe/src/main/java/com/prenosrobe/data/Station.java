@@ -1,24 +1,26 @@
-package com.prenosrobe.deo;
+package com.prenosrobe.data;
 
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "station")
 public class Station
 {
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "station_id")
 	private int id;
 
 	@Column(name = "created_at")
-	private Date createdAt;
+	private Date createdAt = new Date();
 
 	@Column(name = "name")
 	private String name;
@@ -29,9 +31,26 @@ public class Station
 	@Column(name = "active")
 	private boolean active;
 
-	@ManyToOne
-	@JoinColumn(name = "driver_offer_id")
+	@Transient
 	private DriverOffer driverOffer;
+
+	@Column(name = "driver_offer_id")
+	private int driverOfferId;
+
+	/**
+	 * Instantiate a new station.
+	 *
+	 * @param name name
+	 * @param serialNumber serial number
+	 * @param driverOffer driver offer
+	 */
+	public Station(String name, int serialNumber, DriverOffer driverOffer)
+	{
+		this.name = name;
+		this.serialNumber = serialNumber;
+		this.driverOffer = driverOffer;
+		this.driverOfferId = driverOffer.getId();
+	}
 
 	/**
 	 * Get the id.
@@ -151,5 +170,25 @@ public class Station
 	public void setDriverOffer(final DriverOffer driverOffer)
 	{
 		this.driverOffer = driverOffer;
+	}
+
+	/**
+	 * Get the driver offer id.
+	 *
+	 * @return driver offer id
+	 */
+	public int getDriverOfferId()
+	{
+		return driverOfferId;
+	}
+
+	/**
+	 * Set the driver offer id.
+	 *
+	 * @param driverOfferId new driver offer id
+	 */
+	public void setDriverOfferId(final int driverOfferId)
+	{
+		this.driverOfferId = driverOfferId;
 	}
 }

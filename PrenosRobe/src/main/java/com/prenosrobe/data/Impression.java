@@ -1,24 +1,26 @@
-package com.prenosrobe.deo;
+package com.prenosrobe.data;
 
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "impression")
 public class Impression
 {
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "impression_id")
 	private int id;
 
 	@Column(name = "created_at")
-	private Date createdAt;
+	private Date createdAt = new Date();
 
 	@Column(name = "comment")
 	private String comment;
@@ -26,9 +28,28 @@ public class Impression
 	@Column(name = "rating")
 	private int rating;
 
-	@ManyToOne
-	@JoinColumn(name = "user_id")
+	// @ManyToOne
+	// @JoinColumn(name="user_id", nullable = false)
+	@Transient
 	private User user;
+
+	@Column(name = "user_id")
+	private int userId;
+
+	/**
+	 * Instantiate a new impression.
+	 *
+	 * @param comment comment
+	 * @param rating rating
+	 * @param user user
+	 */
+	public Impression(final String comment, final int rating, final User user)
+	{
+		this.comment = comment;
+		this.rating = rating;
+		this.user = user;
+		this.userId = user.getId();
+	}
 
 	/**
 	 * Get the id.
@@ -128,5 +149,25 @@ public class Impression
 	public void setUser(final User user)
 	{
 		this.user = user;
+	}
+
+	/**
+	 * Get the user id.
+	 *
+	 * @return user id
+	 */
+	public int getUserId()
+	{
+		return userId;
+	}
+
+	/**
+	 * Set the user id.
+	 *
+	 * @param userId new user id
+	 */
+	public void setUserId(final int userId)
+	{
+		this.userId = userId;
 	}
 }
