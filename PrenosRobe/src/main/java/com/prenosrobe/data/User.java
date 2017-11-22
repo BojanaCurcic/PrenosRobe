@@ -50,13 +50,20 @@ public class User
 
 	// @OneToMany(mappedBy = "user")
 	@Transient
-	private List<Impression> impressions = new ArrayList<Impression>();
+	private List<Impression> impressions = new ArrayList<>();
 
 	@Transient
-	private List<DriverOffer> driverOffers = new ArrayList<DriverOffer>();
+	private List<DriverOffer> driverOffers = new ArrayList<>();
 
 	@Transient
-	private List<ClaimerOffer> claimerOffers = new ArrayList<ClaimerOffer>();
+	private List<ClaimerOffer> claimerOffers = new ArrayList<>();
+
+	/**
+	 * Instantiate a new user.
+	 */
+	public User()
+	{
+	}
 
 	/**
 	 * Instantiate a new user.
@@ -420,5 +427,21 @@ public class User
 	public void removeClaimerOffer(final ClaimerOffer claimerOffer)
 	{
 		this.claimerOffers.remove(claimerOffer);
+	}
+
+	/**
+	 * Get the average rating.
+	 *
+	 * @return the average rating or 0 if there is no impressions for this user
+	 */
+	public double getAverageRating()
+	{
+		if (impressions.isEmpty())
+			return 0;
+
+		double ratings = impressions.stream().mapToDouble(impression -> impression.getRating())
+				.sum();
+
+		return ratings / impressions.size();
 	}
 }

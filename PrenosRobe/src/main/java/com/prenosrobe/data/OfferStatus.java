@@ -28,7 +28,14 @@ public class OfferStatus
 	private String name;
 
 	@Transient
-	private List<ClaimerOffer> claimerOffers = new ArrayList<ClaimerOffer>();
+	private List<ClaimerOffer> claimerOffers = new ArrayList<>();
+
+	/**
+	 * Instantiate a new offer status.
+	 */
+	public OfferStatus()
+	{
+	}
 
 	/**
 	 * Instantiate a new offer status.

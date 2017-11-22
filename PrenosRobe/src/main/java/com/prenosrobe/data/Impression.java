@@ -38,17 +38,23 @@ public class Impression
 
 	/**
 	 * Instantiate a new impression.
+	 */
+	public Impression()
+	{
+	}
+
+	/**
+	 * Instantiate a new impression.
 	 *
 	 * @param comment comment
 	 * @param rating rating
-	 * @param user user
+	 * @param userId user id
 	 */
-	public Impression(final String comment, final int rating, final User user)
+	public Impression(final String comment, final int rating, final int userId)
 	{
 		this.comment = comment;
 		this.rating = rating;
-		this.user = user;
-		this.userId = user.getId();
+		this.userId = userId;
 	}
 
 	/**
@@ -148,7 +154,11 @@ public class Impression
 	 */
 	public void setUser(final User user)
 	{
-		this.user = user;
+		if (user != null)
+		{
+			this.user = user;
+			this.userId = user.getId();
+		}
 	}
 
 	/**

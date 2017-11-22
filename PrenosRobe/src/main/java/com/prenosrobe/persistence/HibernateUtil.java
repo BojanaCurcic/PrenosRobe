@@ -15,6 +15,11 @@ import com.prenosrobe.data.User;
 public class HibernateUtil
 {
 	private static final SessionFactory sessionFactory = buildSessionFactory();
+	
+	/**
+	 * Instantiate a new HibernateUtil.
+	 */
+	private HibernateUtil() {}
 
 	/**
 	 * Build the session factory.

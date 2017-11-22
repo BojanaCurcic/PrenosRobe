@@ -43,14 +43,24 @@ public class DriverOffer
 	@Column(name = "user_id")
 	private int userId;
 
-	@Transient
-	private List<Station> stations = new ArrayList<Station>();
+	@Column(name = "active")
+	private boolean active = true;
 
 	@Transient
-	private List<String> stationNames = new ArrayList<String>();
+	private List<Station> stations = new ArrayList<>();
 
 	@Transient
-	private List<ClaimerOffer> claimerOffers = new ArrayList<ClaimerOffer>();
+	private List<String> stationNames = new ArrayList<>();
+
+	@Transient
+	private List<ClaimerOffer> claimerOffers = new ArrayList<>();
+
+	/**
+	 * Instantiate a new driver offer.
+	 */
+	public DriverOffer()
+	{
+	}
 
 	/**
 	 * Instantiate a new driver offer.
@@ -58,20 +68,15 @@ public class DriverOffer
 	 * @param departureLocation departure location
 	 * @param arrivalLocation arrival location
 	 * @param date date
-	 * @param user user
-	 * @param stationNames station names
+	 * @param userId user id
 	 */
 	public DriverOffer(final String departureLocation, final String arrivalLocation,
-			final Date date, final User user, final List<String> stationNames)
+			final Date date, final int userId)
 	{
 		this.departureLocation = departureLocation;
 		this.arrivalLocation = arrivalLocation;
 		this.date = date;
-		this.user = user;
-		this.userId = user.getId();
-		this.stationNames = stationNames;
-
-		populateStations();
+		this.userId = userId;
 	}
 
 	/**
@@ -81,21 +86,16 @@ public class DriverOffer
 	 * @param arrivalLocation arrival location
 	 * @param date date
 	 * @param time time
-	 * @param user user
-	 * @param stationNames station names
+	 * @param userId user id
 	 */
 	public DriverOffer(final String departureLocation, final String arrivalLocation,
-			final Date date, final Time time, final User user, final List<String> stationNames)
+			final Date date, final Time time, final int userId)
 	{
 		this.departureLocation = departureLocation;
 		this.arrivalLocation = arrivalLocation;
 		this.date = date;
 		this.time = time;
-		this.user = user;
-		this.userId = user.getId();
-		this.stationNames = stationNames;
-
-		populateStations();
+		this.userId = userId;
 	}
 
 	/**
@@ -235,7 +235,11 @@ public class DriverOffer
 	 */
 	public void setUser(final User user)
 	{
-		this.user = user;
+		if (user != null)
+		{
+			this.user = user;
+			this.userId = user.getId();
+		}
 	}
 
 	/**
@@ -256,6 +260,26 @@ public class DriverOffer
 	public void setUserId(final int userId)
 	{
 		this.userId = userId;
+	}
+
+	/**
+	 * Check if is active.
+	 *
+	 * @return true, if is active
+	 */
+	public boolean isActive()
+	{
+		return active;
+	}
+
+	/**
+	 * Set the active.
+	 *
+	 * @param active new active
+	 */
+	public void setActive(boolean active)
+	{
+		this.active = active;
 	}
 
 	/**
@@ -377,18 +401,21 @@ public class DriverOffer
 	{
 		stations.clear();
 
-		Station departureStation = new Station(departureLocation, 0, this);
+		Station departureStation = new Station(departureLocation, 0, getId());
+		departureStation.setDriverOffer(this);
 		stations.add(departureStation);
 
 		int serialNumber = 1;
 		for (String stationName : stationNames)
 		{
-			Station station = new Station(stationName, serialNumber, this);
+			Station station = new Station(stationName, serialNumber, getId());
+			station.setDriverOffer(this);
 			stations.add(station);
 			serialNumber++;
 		}
 
-		Station arrivalStation = new Station(arrivalLocation, serialNumber, this);
+		Station arrivalStation = new Station(arrivalLocation, serialNumber, getId());
+		arrivalStation.setDriverOffer(this);
 		stations.add(arrivalStation);
 	}
 

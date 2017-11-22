@@ -54,27 +54,30 @@ public class ClaimerOffer
 
 	/**
 	 * Instantiate a new claimer offer.
+	 */
+	public ClaimerOffer()
+	{
+	}
+
+	/**
+	 * Instantiate a new claimer offer.
 	 *
 	 * @param departureLocation departure location
 	 * @param arrivalLocation arrival location
 	 * @param data data
-	 * @param user user
-	 * @param driverOffer driver offer
-	 * @param offerStatus offer status
+	 * @param userId user id
+	 * @param driverOfferId driver offer id
+	 * @param offerStatusId offer status id
 	 */
 	public ClaimerOffer(final String departureLocation, final String arrivalLocation,
-			final String data, final User user, final DriverOffer driverOffer,
-			final OfferStatus offerStatus)
+			final String data, final int userId, final int driverOfferId, final int offerStatusId)
 	{
 		this.departureLocation = departureLocation;
 		this.arrivalLocation = arrivalLocation;
 		this.data = data;
-		this.user = user;
-		this.userId = user.getId();
-		this.driverOffer = driverOffer;
-		this.driverOfferId = driverOffer.getId();
-		this.offerStatus = offerStatus;
-		this.offerStatusId = offerStatus.getId();
+		this.userId = userId;
+		this.driverOfferId = driverOfferId;
+		this.offerStatusId = offerStatusId;
 	}
 
 	/**
@@ -84,24 +87,21 @@ public class ClaimerOffer
 	 * @param arrivalLocation arrival location
 	 * @param data data
 	 * @param photo photo
-	 * @param user user
-	 * @param driverOffer driver offer
-	 * @param offerStatus offer status
+	 * @param userId user id
+	 * @param driverOfferId driver offer id
+	 * @param offerStatusId offer status id
 	 */
 	public ClaimerOffer(final String departureLocation, final String arrivalLocation,
-			final String data, final String photo, final User user, final DriverOffer driverOffer,
-			final OfferStatus offerStatus)
+			final String data, final String photo, final int userId, final int driverOfferId,
+			final int offerStatusId)
 	{
 		this.departureLocation = departureLocation;
 		this.arrivalLocation = arrivalLocation;
 		this.data = data;
 		this.photo = photo;
-		this.user = user;
-		this.userId = user.getId();
-		this.driverOffer = driverOffer;
-		this.driverOfferId = driverOffer.getId();
-		this.offerStatus = offerStatus;
-		this.offerStatusId = offerStatus.getId();
+		this.userId = userId;
+		this.driverOfferId = driverOfferId;
+		this.offerStatusId = offerStatusId;
 	}
 
 	/**
@@ -241,7 +241,11 @@ public class ClaimerOffer
 	 */
 	public void setUser(final User user)
 	{
-		this.user = user;
+		if (user != null)
+		{
+			this.user = user;
+			this.userId = user.getId();
+		}
 	}
 
 	/**
@@ -281,7 +285,11 @@ public class ClaimerOffer
 	 */
 	public void setDriverOffer(final DriverOffer driverOffer)
 	{
-		this.driverOffer = driverOffer;
+		if (driverOffer != null)
+		{
+			this.driverOffer = driverOffer;
+			this.driverOfferId = driverOffer.getId();
+		}
 	}
 
 	/**
@@ -321,7 +329,11 @@ public class ClaimerOffer
 	 */
 	public void setOfferStatus(final OfferStatus offerStatus)
 	{
-		this.offerStatus = offerStatus;
+		if (offerStatus != null)
+		{
+			this.offerStatus = offerStatus;
+			this.offerStatusId = offerStatus.getId();
+		}
 	}
 
 	/**

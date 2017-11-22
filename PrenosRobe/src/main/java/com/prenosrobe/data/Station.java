@@ -29,7 +29,7 @@ public class Station
 	private int serialNumber;
 
 	@Column(name = "active")
-	private boolean active;
+	private boolean active = true;
 
 	@Transient
 	private DriverOffer driverOffer;
@@ -42,14 +42,13 @@ public class Station
 	 *
 	 * @param name name
 	 * @param serialNumber serial number
-	 * @param driverOffer driver offer
+	 * @param driverOfferId driver offer id
 	 */
-	public Station(String name, int serialNumber, DriverOffer driverOffer)
+	public Station(final String name, final int serialNumber, final int driverOfferId)
 	{
 		this.name = name;
 		this.serialNumber = serialNumber;
-		this.driverOffer = driverOffer;
-		this.driverOfferId = driverOffer.getId();
+		this.driverOfferId = driverOfferId;
 	}
 
 	/**
@@ -169,7 +168,11 @@ public class Station
 	 */
 	public void setDriverOffer(final DriverOffer driverOffer)
 	{
-		this.driverOffer = driverOffer;
+		if (driverOffer != null)
+		{
+			this.driverOffer = driverOffer;
+			this.driverOfferId = driverOffer.getId();
+		}
 	}
 
 	/**
