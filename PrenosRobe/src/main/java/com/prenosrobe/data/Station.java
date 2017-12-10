@@ -38,6 +38,13 @@ public class Station
 	private int driverOfferId;
 
 	/**
+	 * Instantiates a new station.
+	 */
+	public Station()
+	{
+	}
+
+	/**
 	 * Instantiate a new station.
 	 *
 	 * @param name name
