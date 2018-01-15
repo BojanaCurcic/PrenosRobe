@@ -1,5 +1,6 @@
 package com.prenosrobe.data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -9,25 +10,32 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "claimer_offer")
-public class ClaimerOffer
+@SuppressWarnings("serial")
+public class ClaimerOffer implements Serializable
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "claimer_offer_id")
-	private int id;
+	private Integer id;
 
 	@Column(name = "created_at")
 	private Date createdAt = new Date();
 
+	@NotEmpty
 	@Column(name = "departure_location")
 	private String departureLocation;
 
+	@NotEmpty
 	@Column(name = "arrival_location")
 	private String arrivalLocation;
 
+	@NotEmpty
 	@Column(name = "data")
 	private String data;
 
@@ -37,30 +45,33 @@ public class ClaimerOffer
 	@Transient
 	private User user;
 
+	@NotNull
 	@Column(name = "user_id")
 	private int userId;
 
 	@Transient
 	private DriverOffer driverOffer;
 
+	@NotNull
 	@Column(name = "driver_offer_id")
 	private int driverOfferId;
 
 	@Transient
 	private OfferStatus offerStatus;
 
+	@NotNull
 	@Column(name = "offer_status_id")
 	private int offerStatusId;
 
 	/**
-	 * Instantiate a new claimer offer.
+	 * Instantiate a new ClaimerOffer.
 	 */
 	public ClaimerOffer()
 	{
 	}
 
 	/**
-	 * Instantiate a new claimer offer.
+	 * Instantiate a new ClaimerOffer.
 	 *
 	 * @param departureLocation departure location
 	 * @param arrivalLocation arrival location
@@ -81,7 +92,7 @@ public class ClaimerOffer
 	}
 
 	/**
-	 * Instantiate a new claimer offer.
+	 * Instantiate a new ClaimerOffer.
 	 *
 	 * @param departureLocation departure location
 	 * @param arrivalLocation arrival location
@@ -109,7 +120,7 @@ public class ClaimerOffer
 	 *
 	 * @return id
 	 */
-	public int getId()
+	public Integer getId()
 	{
 		return id;
 	}
@@ -119,7 +130,7 @@ public class ClaimerOffer
 	 *
 	 * @param id new id
 	 */
-	public void setId(final int id)
+	public void setId(final Integer id)
 	{
 		this.id = id;
 	}

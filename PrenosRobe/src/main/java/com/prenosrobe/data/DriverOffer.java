@@ -1,5 +1,6 @@
 package com.prenosrobe.data;
 
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,25 +13,32 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "driver_offer")
-public class DriverOffer
+@SuppressWarnings("serial")
+public class DriverOffer implements Serializable
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "driver_offer_id")
-	private int id;
+	private Integer id;
 
 	@Column(name = "created_at")
 	private Date createdAt = new Date();
 
+	@NotEmpty
 	@Column(name = "departure_location")
 	private String departureLocation;
 
+	@NotEmpty
 	@Column(name = "arrival_location")
 	private String arrivalLocation;
 
+	@NotNull
 	@Column(name = "date")
 	private Date date;
 
@@ -38,25 +46,28 @@ public class DriverOffer
 	private Time time;
 
 	@Transient
-	private User user;
+	private OfferStatus offerStatus;
 
-	@Column(name = "user_id")
-	private int userId;
-
-	@Column(name = "active")
-	private boolean active = true;
+	@Column(name = "offer_status_id")
+	private int offerStatusId;
 
 	@Transient
-	private List<Station> stations = new ArrayList<>();
+	private UserVehicle userVehicle;
+
+	@Column(name = "user_vehhicle_id")
+	private int userVehicleId;
 
 	@Transient
 	private List<String> stationNames = new ArrayList<>();
 
 	@Transient
+	private List<DriverOfferStation> driverOfferStations = new ArrayList<>();
+
+	@Transient
 	private List<ClaimerOffer> claimerOffers = new ArrayList<>();
 
 	/**
-	 * Instantiate a new driver offer.
+	 * Instantiate a new DriverOffer.
 	 */
 	public DriverOffer()
 	{
@@ -68,15 +79,17 @@ public class DriverOffer
 	 * @param departureLocation departure location
 	 * @param arrivalLocation arrival location
 	 * @param date date
-	 * @param userId user id
+	 * @param offerStatusId offer status id
+	 * @param userVehicleId user vehicle id
 	 */
 	public DriverOffer(final String departureLocation, final String arrivalLocation,
-			final Date date, final int userId)
+			final Date date, final int offerStatusId, final int userVehicleId)
 	{
 		this.departureLocation = departureLocation;
 		this.arrivalLocation = arrivalLocation;
 		this.date = date;
-		this.userId = userId;
+		this.offerStatusId = offerStatusId;
+		this.userVehicleId = userVehicleId;
 	}
 
 	/**
@@ -86,16 +99,18 @@ public class DriverOffer
 	 * @param arrivalLocation arrival location
 	 * @param date date
 	 * @param time time
-	 * @param userId user id
+	 * @param offerStatusId offer status id
+	 * @param userVehicleId user vehicle id
 	 */
 	public DriverOffer(final String departureLocation, final String arrivalLocation,
-			final Date date, final Time time, final int userId)
+			final Date date, final Time time, final int offerStatusId, final int userVehicleId)
 	{
 		this.departureLocation = departureLocation;
 		this.arrivalLocation = arrivalLocation;
 		this.date = date;
 		this.time = time;
-		this.userId = userId;
+		this.offerStatusId = offerStatusId;
+		this.userVehicleId = userVehicleId;
 	}
 
 	/**
@@ -103,7 +118,7 @@ public class DriverOffer
 	 *
 	 * @return id
 	 */
-	public int getId()
+	public Integer getId()
 	{
 		return id;
 	}
@@ -113,7 +128,7 @@ public class DriverOffer
 	 *
 	 * @param id new id
 	 */
-	public void setId(final int id)
+	public void setId(final Integer id)
 	{
 		this.id = id;
 	}
@@ -219,116 +234,158 @@ public class DriverOffer
 	}
 
 	/**
-	 * Get the user.
+	 * Get the offer status.
 	 *
-	 * @return user
+	 * @return offer status
 	 */
-	public User getUser()
+	public OfferStatus getOfferStatus()
 	{
-		return user;
+		return offerStatus;
 	}
 
 	/**
-	 * Set the user.
+	 * Set the offer status.
 	 *
-	 * @param user new user
+	 * @param offerStatus new offer status
 	 */
-	public void setUser(final User user)
+	public void setOfferStatus(final OfferStatus offerStatus)
 	{
-		if (user != null)
+		if (offerStatus != null)
 		{
-			this.user = user;
-			this.userId = user.getId();
+			this.offerStatus = offerStatus;
+			this.offerStatusId = offerStatus.getId();
 		}
 	}
 
 	/**
-	 * Get the user id.
+	 * Get the offer status id.
 	 *
-	 * @return user id
+	 * @return offer status id
 	 */
-	public int getUserId()
+	public int getOfferStatusId()
 	{
-		return userId;
+		return offerStatusId;
 	}
 
 	/**
-	 * Set the user id.
+	 * Set the offer status id.
 	 *
-	 * @param userId new user id
+	 * @param offerStatusId new offer status id
 	 */
-	public void setUserId(final int userId)
+	public void setOfferStatusId(int offerStatusId)
 	{
-		this.userId = userId;
+		this.offerStatusId = offerStatusId;
 	}
 
 	/**
-	 * Check if is active.
+	 * Get the user vehicle.
 	 *
-	 * @return true, if is active
+	 * @return user vehicle
 	 */
-	public boolean isActive()
+	public UserVehicle getUserVehicle()
 	{
-		return active;
+		return userVehicle;
 	}
 
 	/**
-	 * Set the active.
+	 * Set the user vehicle.
 	 *
-	 * @param active new active
+	 * @param userVehicle new user vehicle
 	 */
-	public void setActive(boolean active)
+	public void setUserVehicle(final UserVehicle userVehicle)
 	{
-		this.active = active;
-	}
-
-	/**
-	 * Get the stations.
-	 *
-	 * @return stations
-	 */
-	public List<Station> getStations()
-	{
-		return stations;
-	}
-
-	/**
-	 * Set the stations.
-	 *
-	 * @param stations new stations
-	 */
-	public void setStations(final List<Station> stations)
-	{
-		this.stations.clear();
-		this.stations = stations;
-
-		this.stationNames.clear();
-		for (Station station : stations)
+		if (userVehicle != null)
 		{
-			this.stationNames.add(station.getName());
+			this.userVehicle = userVehicle;
+			this.userVehicleId = userVehicle.getId();
 		}
 	}
 
 	/**
-	 * Add the new station.
+	 * Get the user vehicle id.
 	 *
-	 * @param stationNames station new station
+	 * @return user vehicle id
 	 */
-	public void addStation(final Station station)
+	public int getUserVehicleId()
 	{
-		this.stations.add(station);
-		this.stationNames.add(station.getName());
+		return userVehicleId;
 	}
 
 	/**
-	 * Remove the station.
+	 * Set the user vehicle id.
 	 *
-	 * @param station station
+	 * @param userVehicleId new user vehicle id
 	 */
-	public void removeStation(final Station station)
+	public void setUserVehicleId(final int userVehicleId)
 	{
-		this.stations.remove(station);
-		this.stationNames.remove(station.getName());
+		this.userVehicleId = userVehicleId;
+	}
+
+	/**
+	 * Get the driver offer stations.
+	 *
+	 * @return driver offer stations
+	 */
+	public List<DriverOfferStation> getDriverOfferStations()
+	{
+		return driverOfferStations;
+	}
+
+	/**
+	 * Set the driver offer stations.
+	 *
+	 * @param driverOfferStations new driver offer stations
+	 */
+	public void setDriverOfferStations(List<DriverOfferStation> driverOfferStations)
+	{
+		this.driverOfferStations = driverOfferStations;
+
+		for (DriverOfferStation driverOfferStation : driverOfferStations)
+		{
+			this.stationNames.add(driverOfferStation.getStation().getName());
+		}
+	}
+
+	/**
+	 * Add the driver offer station.
+	 *
+	 * @param driverOfferStation driver offer station
+	 */
+	public void addDriverOfferStation(final DriverOfferStation driverOfferStation)
+	{
+		this.driverOfferStations.add(driverOfferStation);
+		this.stationNames.add(driverOfferStation.getStation().getName());
+	}
+
+	/**
+	 * Remove the driver offer station.
+	 *
+	 * @param driverOfferStation driver offer station
+	 */
+	public void removeDriverOfferStation(final DriverOfferStation driverOfferStation)
+	{
+		this.driverOfferStations.remove(driverOfferStation);
+		this.stationNames.remove(driverOfferStation.getStation().getName());
+	}
+
+	/**
+	 * Get the station names.
+	 *
+	 * @return station names
+	 */
+	public List<String> getStationNames()
+	{
+		return stationNames;
+	}
+
+	/**
+	 * Set the station names.
+	 *
+	 * @param stationNames new station names
+	 */
+	public void setStationNames(List<String> stationNames)
+	{
+		this.stationNames = stationNames;
 	}
 
 	/**
@@ -352,29 +409,6 @@ public class DriverOffer
 	}
 
 	/**
-	 * Get the station names.
-	 *
-	 * @return station names
-	 */
-	public List<String> getStationNames()
-	{
-		return stationNames;
-	}
-
-	/**
-	 * Set the station names.
-	 *
-	 * @param stationNames new station names
-	 */
-	public void setStationNames(List<String> stationNames)
-	{
-		this.stationNames.clear();
-		this.stationNames = stationNames;
-
-		populateStations();
-	}
-
-	/**
 	 * Add the new claimer offer.
 	 *
 	 * @param claimerOffer new claimer offer
@@ -392,42 +426,5 @@ public class DriverOffer
 	public void removeClaimerOffer(final ClaimerOffer claimerOffer)
 	{
 		this.claimerOffers.remove(claimerOffer);
-	}
-
-	/**
-	 * Populate stations according to stationNames list.
-	 */
-	private void populateStations()
-	{
-		stations.clear();
-
-		Station departureStation = new Station(departureLocation, 0, getId());
-		departureStation.setDriverOffer(this);
-		stations.add(departureStation);
-
-		int serialNumber = 1;
-		for (String stationName : stationNames)
-		{
-			Station station = new Station(stationName, serialNumber, getId());
-			station.setDriverOffer(this);
-			stations.add(station);
-			serialNumber++;
-		}
-
-		Station arrivalStation = new Station(arrivalLocation, serialNumber, getId());
-		arrivalStation.setDriverOffer(this);
-		stations.add(arrivalStation);
-	}
-
-	/**
-	 * Set the stations driver offer id. This method must be called adding this object into database.
-	 */
-	public void setStationsDriverOfferId()
-	{
-		for (Station station : stations)
-		{
-			station.getDriverOffer().setId(this.id);
-			station.setDriverOfferId(this.id);
-		}
 	}
 }

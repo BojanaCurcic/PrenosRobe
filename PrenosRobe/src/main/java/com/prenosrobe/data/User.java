@@ -1,8 +1,7 @@
 package com.prenosrobe.data;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,63 +9,64 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+
+import com.prenosrobe.dto.UserDto;
 
 @Entity
 @Table(name = "user")
-public class User
+@SuppressWarnings("serial")
+public class User implements Serializable
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "user_id")
-	private int id;
+	private Integer id;
 
+	@Column(name = "created_at")
+	private Date createdAt = new Date();
+
+	// @NotEmpty
 	@Column(name = "name")
 	private String name;
 
+	// @NotEmpty
 	@Column(name = "surname")
 	private String surname;
 
+	// @NotEmpty
 	@Column(name = "username")
 	private String username;
 
+	// @NotEmpty
 	@Column(name = "password")
 	private String password;
 
+	// @Email
 	@Column(name = "email")
 	private String email;
 
+	// @NotEmpty
 	@Column(name = "phone_number")
 	private String phoneNumber;
 
 	@Column(name = "photo")
 	private String photo;
 
+	@Column(name = "token")
+	private String token;
+
 	@Column(name = "active")
 	private boolean active = true;
-
-	@Column(name = "created_at")
-	private Date createdAt = new Date();
-
-	// @OneToMany(mappedBy = "user")
-	@Transient
-	private List<Impression> impressions = new ArrayList<>();
-
-	@Transient
-	private List<DriverOffer> driverOffers = new ArrayList<>();
-
-	@Transient
-	private List<ClaimerOffer> claimerOffers = new ArrayList<>();
-
+	
 	/**
-	 * Instantiate a new user.
+	 * Instantiate a new User.
 	 */
 	public User()
 	{
 	}
 
 	/**
-	 * Instantiate a new user.
+	 * Instantiate a new User.
 	 *
 	 * @param name name
 	 * @param surname surname
@@ -74,9 +74,10 @@ public class User
 	 * @param password password
 	 * @param email email
 	 * @param phoneNumber phone number
+	 * @param token token
 	 */
 	public User(final String name, final String surname, final String username,
-			final String password, final String email, final String phoneNumber)
+			final String password, final String email, final String phoneNumber, final String token)
 	{
 		this.name = name;
 		this.surname = surname;
@@ -84,10 +85,11 @@ public class User
 		this.password = password;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
+		this.token = token;
 	}
 
 	/**
-	 * Instantiate a new user.
+	 * Instantiate a new User.
 	 *
 	 * @param name name
 	 * @param surname surname
@@ -96,9 +98,11 @@ public class User
 	 * @param email email
 	 * @param phoneNumber phone number
 	 * @param photo photo
+	 * @param token token
 	 */
 	public User(final String name, final String surname, final String username,
-			final String password, final String email, final String phoneNumber, final String photo)
+			final String password, final String email, final String phoneNumber, final String photo,
+			final String token)
 	{
 		this.name = name;
 		this.surname = surname;
@@ -107,6 +111,26 @@ public class User
 		this.email = email;
 		this.phoneNumber = phoneNumber;
 		this.photo = photo;
+		this.token = token;
+	}
+	
+	/**
+	 * Instantiates a new user.
+	 *
+	 * @param userDto user dto
+	 */
+	public User(final UserDto userDto)
+	{
+		this.id = userDto.getId();
+		this.name = userDto.getName();
+		this.surname = userDto.getSurname();
+		this.username = userDto.getUsername();
+		this.password = userDto.getPassword();
+		this.email = userDto.getEmail();
+		this.phoneNumber = userDto.getPhoneNumber();
+		this.photo = userDto.getPhoto();
+		this.token = userDto.getToken();
+		this.active = userDto.isActive();
 	}
 
 	/**
@@ -114,7 +138,7 @@ public class User
 	 *
 	 * @return id
 	 */
-	public int getId()
+	public Integer getId()
 	{
 		return id;
 	}
@@ -124,7 +148,7 @@ public class User
 	 *
 	 * @param id new id
 	 */
-	public void setId(final int id)
+	public void setId(final Integer id)
 	{
 		this.id = id;
 	}
@@ -270,6 +294,26 @@ public class User
 	}
 
 	/**
+	 * Get the token.
+	 *
+	 * @return token
+	 */
+	public String getToken()
+	{
+		return token;
+	}
+
+	/**
+	 * Set the token.
+	 *
+	 * @param token new token
+	 */
+	public void setToken(final String token)
+	{
+		this.token = token;
+	}
+
+	/**
 	 * Check if is active.
 	 *
 	 * @return true, if is active
@@ -307,141 +351,5 @@ public class User
 	public void setCreatedAt(final Date createdAt)
 	{
 		this.createdAt = createdAt;
-	}
-
-	/**
-	 * Get the impressions.
-	 *
-	 * @return impressions
-	 */
-	public List<Impression> getImpressions()
-	{
-		return impressions;
-	}
-
-	/**
-	 * Set the impressions.
-	 *
-	 * @param impressions new impressions
-	 */
-	public void setImpressions(final List<Impression> impressions)
-	{
-		this.impressions = impressions;
-	}
-
-	/**
-	 * Add the new impression.
-	 *
-	 * @param impression new impression
-	 */
-	public void addImpression(final Impression impression)
-	{
-		this.impressions.add(impression);
-	}
-
-	/**
-	 * Remove the impression.
-	 *
-	 * @param impression impression
-	 */
-	public void removeImpression(final Impression impression)
-	{
-		this.impressions.remove(impression);
-	}
-
-	/**
-	 * Get the driver offers.
-	 *
-	 * @return driver offers
-	 */
-	public List<DriverOffer> getDriverOffers()
-	{
-		return driverOffers;
-	}
-
-	/**
-	 * Set the driver offers.
-	 *
-	 * @param driverOffers new driver offers
-	 */
-	public void setDriverOffers(final List<DriverOffer> driverOffers)
-	{
-		this.driverOffers = driverOffers;
-	}
-
-	/**
-	 * Add the new driver offer.
-	 *
-	 * @param driverOffer new driver offer
-	 */
-	public void addDriverOffer(final DriverOffer driverOffer)
-	{
-		this.driverOffers.add(driverOffer);
-	}
-
-	/**
-	 * Remove the driver offer.
-	 *
-	 * @param driverOffer driver offer
-	 */
-	public void removeDriverOffer(final DriverOffer driverOffer)
-	{
-		this.driverOffers.remove(driverOffer);
-	}
-
-	/**
-	 * Get the claimer offers.
-	 *
-	 * @return claimer offers
-	 */
-	public List<ClaimerOffer> getClaimerOffers()
-	{
-		return claimerOffers;
-	}
-
-	/**
-	 * Set the claimer offers.
-	 *
-	 * @param claimerOffers new claimer offers
-	 */
-	public void setClaimerOffers(final List<ClaimerOffer> claimerOffers)
-	{
-		this.claimerOffers = claimerOffers;
-	}
-
-	/**
-	 * Add the new claimer offer.
-	 *
-	 * @param claimerOffer new claimer offer
-	 */
-	public void addClaimerOffer(final ClaimerOffer claimerOffer)
-	{
-		this.claimerOffers.add(claimerOffer);
-	}
-
-	/**
-	 * Remove the claimer offer.
-	 *
-	 * @param claimerOffer claimer offer
-	 */
-	public void removeClaimerOffer(final ClaimerOffer claimerOffer)
-	{
-		this.claimerOffers.remove(claimerOffer);
-	}
-
-	/**
-	 * Get the average rating.
-	 *
-	 * @return the average rating or 0 if there is no impressions for this user
-	 */
-	public double getAverageRating()
-	{
-		if (impressions.isEmpty())
-			return 0;
-
-		double ratings = impressions.stream().mapToDouble(impression -> impression.getRating())
-				.sum();
-
-		return ratings / impressions.size();
 	}
 }

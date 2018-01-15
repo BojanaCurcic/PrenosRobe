@@ -1,5 +1,6 @@
 package com.prenosrobe.data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -12,49 +13,94 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name = "impression")
-public class Impression
+@SuppressWarnings("serial")
+public class Impression implements Serializable
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "impression_id")
-	private int id;
+	private Integer id;
 
 	@Column(name = "created_at")
 	private Date createdAt = new Date();
 
-	@Column(name = "comment")
-	private String comment;
+	@Column(name = "is_driver")
+	private boolean isDriver;
 
-	@Column(name = "rating")
-	private int rating;
-
-	// @ManyToOne
-	// @JoinColumn(name="user_id", nullable = false)
 	@Transient
 	private User user;
 
 	@Column(name = "user_id")
 	private int userId;
 
+	@Column(name = "picked_on_time")
+	private int pickedOnTime;
+
+	@Column(name = "delivered_on_time")
+	private int deliveredOnTime;
+
+	@Column(name = "delivered_undamaged")
+	private int deliveredUndamaged;
+
+	@Column(name = "delivered")
+	private int delivered;
+
+	@Column(name = "correctly_paid")
+	private int correctlyPaid;
+
+	@Column(name = "comment")
+	private String comment;
+
 	/**
-	 * Instantiate a new impression.
+	 * Instantiate a new Impression.
 	 */
 	public Impression()
 	{
 	}
 
 	/**
-	 * Instantiate a new impression.
+	 * Instantiate a new Impression if isDriver is true.
 	 *
-	 * @param comment comment
-	 * @param rating rating
+	 * @param isDriver is driver
 	 * @param userId user id
+	 * @param pickedOnTime picked on time
+	 * @param deliveredOnTime delivered on time
+	 * @param deliveredUndamaged delivered undamaged
+	 * @param delivered delivered
+	 * @param comment comment
 	 */
-	public Impression(final String comment, final int rating, final int userId)
+	public Impression(final boolean isDriver, final int userId, final int pickedOnTime,
+			final int deliveredOnTime, final int deliveredUndamaged, final int delivered,
+			final String comment)
 	{
-		this.comment = comment;
-		this.rating = rating;
+		this.isDriver = isDriver;
 		this.userId = userId;
+		this.pickedOnTime = pickedOnTime;
+		this.deliveredOnTime = deliveredOnTime;
+		this.deliveredUndamaged = deliveredUndamaged;
+		this.delivered = delivered;
+		this.comment = comment;
+	}
+
+	/**
+	 * Instantiate a new Impression if isDriver is false.
+	 *
+	 * @param isDriver is driver
+	 * @param userId user id
+	 * @param pickedOnTime picked on time
+	 * @param deliveredOnTime delivered on time
+	 * @param correctlyPaid correctly paid
+	 * @param comment comment
+	 */
+	public Impression(final boolean isDriver, final int userId, final int pickedOnTime,
+			final int deliveredOnTime, final int correctlyPaid, final String comment)
+	{
+		this.isDriver = isDriver;
+		this.userId = userId;
+		this.pickedOnTime = pickedOnTime;
+		this.deliveredOnTime = deliveredOnTime;
+		this.correctlyPaid = correctlyPaid;
+		this.comment = comment;
 	}
 
 	/**
@@ -62,7 +108,7 @@ public class Impression
 	 *
 	 * @return id
 	 */
-	public int getId()
+	public Integer getId()
 	{
 		return id;
 	}
@@ -72,49 +118,9 @@ public class Impression
 	 *
 	 * @param id new id
 	 */
-	public void setId(final int id)
+	public void setId(final Integer id)
 	{
 		this.id = id;
-	}
-
-	/**
-	 * Get the comment.
-	 *
-	 * @return comment
-	 */
-	public String getComment()
-	{
-		return comment;
-	}
-
-	/**
-	 * Set the comment.
-	 *
-	 * @param comment new comment
-	 */
-	public void setComment(final String comment)
-	{
-		this.comment = comment;
-	}
-
-	/**
-	 * Get the rating.
-	 *
-	 * @return rating
-	 */
-	public int getRating()
-	{
-		return rating;
-	}
-
-	/**
-	 * Set the rating.
-	 *
-	 * @param rating new rating
-	 */
-	public void setRating(final int rating)
-	{
-		this.rating = rating;
 	}
 
 	/**
@@ -135,6 +141,26 @@ public class Impression
 	public void setCreatedAt(final Date createdAt)
 	{
 		this.createdAt = createdAt;
+	}
+
+	/**
+	 * Check if is driver.
+	 *
+	 * @return true, if is driver
+	 */
+	public boolean isDriver()
+	{
+		return isDriver;
+	}
+
+	/**
+	 * Set the driver.
+	 *
+	 * @param isDriver new driver
+	 */
+	public void setDriver(final boolean isDriver)
+	{
+		this.isDriver = isDriver;
 	}
 
 	/**
@@ -179,5 +205,125 @@ public class Impression
 	public void setUserId(final int userId)
 	{
 		this.userId = userId;
+	}
+
+	/**
+	 * Get the picked on time.
+	 *
+	 * @return picked on time
+	 */
+	public int getPickedOnTime()
+	{
+		return pickedOnTime;
+	}
+
+	/**
+	 * Set the picked on time.
+	 *
+	 * @param pickedOnTime new picked on time
+	 */
+	public void setPickedOnTime(final int pickedOnTime)
+	{
+		this.pickedOnTime = pickedOnTime;
+	}
+
+	/**
+	 * Get the delivered on time.
+	 *
+	 * @return delivered on time
+	 */
+	public int getDeliveredOnTime()
+	{
+		return deliveredOnTime;
+	}
+
+	/**
+	 * Set the delivered on time.
+	 *
+	 * @param deliveredOnTime new delivered on time
+	 */
+	public void setDeliveredOnTime(final int deliveredOnTime)
+	{
+		this.deliveredOnTime = deliveredOnTime;
+	}
+
+	/**
+	 * Get the delivered undamaged.
+	 *
+	 * @return delivered undamaged
+	 */
+	public int getDeliveredUndamaged()
+	{
+		return deliveredUndamaged;
+	}
+
+	/**
+	 * Set the delivered undamaged.
+	 *
+	 * @param deliveredUndamaged new delivered undamaged
+	 */
+	public void setDeliveredUndamaged(final int deliveredUndamaged)
+	{
+		this.deliveredUndamaged = deliveredUndamaged;
+	}
+
+	/**
+	 * Get the delivered.
+	 *
+	 * @return delivered
+	 */
+	public int getDelivered()
+	{
+		return delivered;
+	}
+
+	/**
+	 * Set the delivered.
+	 *
+	 * @param delivered new delivered
+	 */
+	public void setDelivered(final int delivered)
+	{
+		this.delivered = delivered;
+	}
+
+	/**
+	 * Get the correctly paid.
+	 *
+	 * @return correctly paid
+	 */
+	public int getCorrectlyPaid()
+	{
+		return correctlyPaid;
+	}
+
+	/**
+	 * Set the correctly paid.
+	 *
+	 * @param correctlyPaid new correctly paid
+	 */
+	public void setCorrectlyPaid(int correctlyPaid)
+	{
+		this.correctlyPaid = correctlyPaid;
+	}
+
+	/**
+	 * Get the comment.
+	 *
+	 * @return comment
+	 */
+	public String getComment()
+	{
+		return comment;
+	}
+
+	/**
+	 * Set the comment.
+	 *
+	 * @param comment new comment
+	 */
+	public void setComment(final String comment)
+	{
+		this.comment = comment;
 	}
 }

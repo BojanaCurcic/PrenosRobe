@@ -11,13 +11,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "offer_status")
+@Table(name = "vehicle_type")
 @SuppressWarnings("serial")
-public class OfferStatus implements Serializable
+public class VehicleType implements Serializable
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "offer_status_id")
+	@Column(name = "vehicle_type_id")
 	private Integer id;
 
 	@Column(name = "created_at")
@@ -27,18 +27,18 @@ public class OfferStatus implements Serializable
 	private String name;
 
 	/**
-	 * Instantiate a new OfferStatus.
+	 * Instantiate a new VehicleType.
 	 */
-	public OfferStatus()
+	public VehicleType()
 	{
 	}
 
 	/**
-	 * Instantiate a new OfferStatus.
+	 * Instantiate a new VehicleType.
 	 *
 	 * @param name name
 	 */
-	public OfferStatus(String name)
+	public VehicleType(final String name)
 	{
 		this.name = name;
 	}
@@ -64,26 +64,6 @@ public class OfferStatus implements Serializable
 	}
 
 	/**
-	 * Get the name.
-	 *
-	 * @return name
-	 */
-	public String getName()
-	{
-		return name;
-	}
-
-	/**
-	 * Set the name.
-	 *
-	 * @param name new name
-	 */
-	public void setName(final String name)
-	{
-		this.name = name;
-	}
-
-	/**
 	 * Get the created at.
 	 *
 	 * @return created at
@@ -101,5 +81,25 @@ public class OfferStatus implements Serializable
 	public void setCreatedAt(final Date createdAt)
 	{
 		this.createdAt = createdAt;
+	}
+
+	/**
+	 * Get the name.
+	 *
+	 * @return name
+	 */
+	public String getName()
+	{
+		return name;
+	}
+
+	/**
+	 * Set the name.
+	 *
+	 * @param name new name
+	 */
+	public void setName(final String name)
+	{
+		this.name = name;
 	}
 }
