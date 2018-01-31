@@ -10,6 +10,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
+
 import com.prenosrobe.dto.UserDto;
 
 @Entity
@@ -25,27 +28,28 @@ public class User implements Serializable
 	@Column(name = "created_at")
 	private Date createdAt = new Date();
 
-	// @NotEmpty
+	@NotEmpty
 	@Column(name = "name")
 	private String name;
 
-	// @NotEmpty
+	@NotEmpty
 	@Column(name = "surname")
 	private String surname;
 
-	// @NotEmpty
+	@NotEmpty
 	@Column(name = "username")
 	private String username;
 
-	// @NotEmpty
+	@NotEmpty
 	@Column(name = "password")
 	private String password;
 
-	// @Email
+	@NotEmpty
+	@Email
 	@Column(name = "email")
 	private String email;
 
-	// @NotEmpty
+	@NotEmpty
 	@Column(name = "phone_number")
 	private String phoneNumber;
 
@@ -57,7 +61,7 @@ public class User implements Serializable
 
 	@Column(name = "active")
 	private boolean active = true;
-	
+
 	/**
 	 * Instantiate a new User.
 	 */
@@ -113,15 +117,14 @@ public class User implements Serializable
 		this.photo = photo;
 		this.token = token;
 	}
-	
+
 	/**
-	 * Instantiates a new user.
+	 * Instantiate a new user.
 	 *
 	 * @param userDto user dto
 	 */
 	public User(final UserDto userDto)
 	{
-		this.id = userDto.getId();
 		this.name = userDto.getName();
 		this.surname = userDto.getSurname();
 		this.username = userDto.getUsername();

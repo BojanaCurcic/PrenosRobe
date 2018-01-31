@@ -3,8 +3,6 @@ package com.prenosrobe.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.Null;
-
 import com.prenosrobe.data.ClaimerOffer;
 import com.prenosrobe.data.DriverOffer;
 import com.prenosrobe.data.Impression;
@@ -14,7 +12,6 @@ import com.prenosrobe.data.Vehicle;
 
 public class UserDto
 {
-	@Null
 	private Integer id;
 
 	private String name;
@@ -31,15 +28,13 @@ public class UserDto
 
 	private String photo;
 
-	@Null
 	private String token;
 
-	@Null
 	private boolean active;
 
 	private List<Impression> impressions = new ArrayList<>();
 
-	private List<Language> languages = new ArrayList<>();
+	private List<LanguageDto> languages = new ArrayList<>();
 
 	private List<Vehicle> vehicles = new ArrayList<>();
 
@@ -205,17 +200,17 @@ public class UserDto
 		this.vehicles.remove(vehicle);
 	}
 
-	public List<Language> getLanguages()
+	public List<LanguageDto> getLanguages()
 	{
 		return languages;
 	}
 
-	public void setLanguages(final List<Language> languages)
+	public void setLanguages(final List<LanguageDto> languages)
 	{
 		this.languages = languages;
 	}
 
-	public void addLanguage(final Language language)
+	public void addLanguage(final LanguageDto language)
 	{
 		this.languages.add(language);
 	}
