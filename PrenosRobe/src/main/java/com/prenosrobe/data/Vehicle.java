@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
 @Table(name = "vehicle")
@@ -27,11 +26,8 @@ public class Vehicle implements Serializable
 	@Column(name = "registration_number")
 	private String registrationNumber;
 
-	@Transient
-	private VehicleType vehicleType;
-
 	@Column(name = "vehicle_type_id")
-	private int vehicleTypeId;
+	private Integer vehicleTypeId;
 
 	/**
 	 * Instantiate a new Vehicle.
@@ -46,7 +42,7 @@ public class Vehicle implements Serializable
 	 * @param registrationNumber registration number
 	 * @param vehicleTypeId vehicle type id
 	 */
-	public Vehicle(final String registrationNumber, final int vehicleTypeId)
+	public Vehicle(final String registrationNumber, final Integer vehicleTypeId)
 	{
 		this.registrationNumber = registrationNumber;
 		this.vehicleTypeId = vehicleTypeId;
@@ -113,35 +109,11 @@ public class Vehicle implements Serializable
 	}
 
 	/**
-	 * Get the vehicle type.
-	 *
-	 * @return vehicle type
-	 */
-	public VehicleType getVehicleType()
-	{
-		return vehicleType;
-	}
-
-	/**
-	 * Set the vehicle type.
-	 *
-	 * @param vehicleType new vehicle type
-	 */
-	public void setVehicleType(final VehicleType vehicleType)
-	{
-		if (vehicleType != null)
-		{
-			this.vehicleType = vehicleType;
-			this.vehicleTypeId = vehicleType.getId();
-		}
-	}
-
-	/**
 	 * Get the vehicle type id.
 	 *
 	 * @return vehicle type id
 	 */
-	public int getVehicleTypeId()
+	public Integer getVehicleTypeId()
 	{
 		return vehicleTypeId;
 	}
@@ -151,7 +123,7 @@ public class Vehicle implements Serializable
 	 *
 	 * @param vehicleTypeId new vehicle type id
 	 */
-	public void setVehicleTypeId(final int vehicleTypeId)
+	public void setVehicleTypeId(final Integer vehicleTypeId)
 	{
 		this.vehicleTypeId = vehicleTypeId;
 	}

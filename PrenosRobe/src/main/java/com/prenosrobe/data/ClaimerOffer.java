@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -42,26 +41,17 @@ public class ClaimerOffer implements Serializable
 	@Column(name = "photo")
 	private String photo;
 
-	@Transient
-	private User user;
-
 	@NotNull
 	@Column(name = "user_id")
-	private int userId;
-
-	@Transient
-	private DriverOffer driverOffer;
+	private Integer userId;
 
 	@NotNull
 	@Column(name = "driver_offer_id")
-	private int driverOfferId;
-
-	@Transient
-	private OfferStatus offerStatus;
+	private Integer driverOfferId;
 
 	@NotNull
 	@Column(name = "offer_status_id")
-	private int offerStatusId;
+	private Integer offerStatusId;
 
 	/**
 	 * Instantiate a new ClaimerOffer.
@@ -81,7 +71,7 @@ public class ClaimerOffer implements Serializable
 	 * @param offerStatusId offer status id
 	 */
 	public ClaimerOffer(final String departureLocation, final String arrivalLocation,
-			final String data, final int userId, final int driverOfferId, final int offerStatusId)
+			final String data, final Integer userId, final Integer driverOfferId, final Integer offerStatusId)
 	{
 		this.departureLocation = departureLocation;
 		this.arrivalLocation = arrivalLocation;
@@ -103,8 +93,8 @@ public class ClaimerOffer implements Serializable
 	 * @param offerStatusId offer status id
 	 */
 	public ClaimerOffer(final String departureLocation, final String arrivalLocation,
-			final String data, final String photo, final int userId, final int driverOfferId,
-			final int offerStatusId)
+			final String data, final String photo, final Integer userId, final Integer driverOfferId,
+			final Integer offerStatusId)
 	{
 		this.departureLocation = departureLocation;
 		this.arrivalLocation = arrivalLocation;
@@ -236,35 +226,11 @@ public class ClaimerOffer implements Serializable
 	}
 
 	/**
-	 * Get the user.
-	 *
-	 * @return user
-	 */
-	public User getUser()
-	{
-		return user;
-	}
-
-	/**
-	 * Set the user.
-	 *
-	 * @param user new user
-	 */
-	public void setUser(final User user)
-	{
-		if (user != null)
-		{
-			this.user = user;
-			this.userId = user.getId();
-		}
-	}
-
-	/**
 	 * Get the user id.
 	 *
 	 * @return user id
 	 */
-	public int getUserId()
+	public Integer getUserId()
 	{
 		return userId;
 	}
@@ -274,33 +240,9 @@ public class ClaimerOffer implements Serializable
 	 *
 	 * @param userId new user id
 	 */
-	public void setUserId(final int userId)
+	public void setUserId(final Integer userId)
 	{
 		this.userId = userId;
-	}
-
-	/**
-	 * Get the driver offer.
-	 *
-	 * @return driver offer
-	 */
-	public DriverOffer getDriverOffer()
-	{
-		return driverOffer;
-	}
-
-	/**
-	 * Set the driver offer.
-	 *
-	 * @param driverOffer new driver offer
-	 */
-	public void setDriverOffer(final DriverOffer driverOffer)
-	{
-		if (driverOffer != null)
-		{
-			this.driverOffer = driverOffer;
-			this.driverOfferId = driverOffer.getId();
-		}
 	}
 
 	/**
@@ -308,7 +250,7 @@ public class ClaimerOffer implements Serializable
 	 *
 	 * @return driver offer id
 	 */
-	public int getDriverOfferId()
+	public Integer getDriverOfferId()
 	{
 		return driverOfferId;
 	}
@@ -318,33 +260,9 @@ public class ClaimerOffer implements Serializable
 	 *
 	 * @param driverOfferId new driver offer id
 	 */
-	public void setDriverOfferId(final int driverOfferId)
+	public void setDriverOfferId(final Integer driverOfferId)
 	{
 		this.driverOfferId = driverOfferId;
-	}
-
-	/**
-	 * Get the offer status.
-	 *
-	 * @return offer status
-	 */
-	public OfferStatus getOfferStatus()
-	{
-		return offerStatus;
-	}
-
-	/**
-	 * Set the offer status.
-	 *
-	 * @param offerStatus new offer status
-	 */
-	public void setOfferStatus(final OfferStatus offerStatus)
-	{
-		if (offerStatus != null)
-		{
-			this.offerStatus = offerStatus;
-			this.offerStatusId = offerStatus.getId();
-		}
 	}
 
 	/**
@@ -352,7 +270,7 @@ public class ClaimerOffer implements Serializable
 	 *
 	 * @return offer status id
 	 */
-	public int getOfferStatusId()
+	public Integer getOfferStatusId()
 	{
 		return offerStatusId;
 	}
@@ -362,7 +280,7 @@ public class ClaimerOffer implements Serializable
 	 *
 	 * @param offerStatusId new offer status id
 	 */
-	public void setOfferStatusId(final int offerStatusId)
+	public void setOfferStatusId(final Integer offerStatusId)
 	{
 		this.offerStatusId = offerStatusId;
 	}

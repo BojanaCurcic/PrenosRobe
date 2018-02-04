@@ -2,9 +2,7 @@ package com.prenosrobe.data;
 
 import java.io.Serializable;
 import java.sql.Time;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,10 +10,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
+
+import com.prenosrobe.dto.DriverOfferDto;
 
 @Entity
 @Table(name = "driver_offer")
@@ -45,26 +44,13 @@ public class DriverOffer implements Serializable
 	@Column(name = "time")
 	private Time time;
 
-	@Transient
-	private OfferStatus offerStatus;
-
+	@NotNull
 	@Column(name = "offer_status_id")
-	private int offerStatusId;
+	private Integer offerStatusId = null;
 
-	@Transient
-	private UserVehicle userVehicle;
-
-	@Column(name = "user_vehhicle_id")
-	private int userVehicleId;
-
-	@Transient
-	private List<String> stationNames = new ArrayList<>();
-
-	@Transient
-	private List<DriverOfferStation> driverOfferStations = new ArrayList<>();
-
-	@Transient
-	private List<ClaimerOffer> claimerOffers = new ArrayList<>();
+	@NotNull
+	@Column(name = "user_vehicle_id")
+	private Integer userVehicleId = null;
 
 	/**
 	 * Instantiate a new DriverOffer.
@@ -83,7 +69,7 @@ public class DriverOffer implements Serializable
 	 * @param userVehicleId user vehicle id
 	 */
 	public DriverOffer(final String departureLocation, final String arrivalLocation,
-			final Date date, final int offerStatusId, final int userVehicleId)
+			final Date date, final Integer offerStatusId, final Integer userVehicleId)
 	{
 		this.departureLocation = departureLocation;
 		this.arrivalLocation = arrivalLocation;
@@ -103,7 +89,8 @@ public class DriverOffer implements Serializable
 	 * @param userVehicleId user vehicle id
 	 */
 	public DriverOffer(final String departureLocation, final String arrivalLocation,
-			final Date date, final Time time, final int offerStatusId, final int userVehicleId)
+			final Date date, final Time time, final Integer offerStatusId,
+			final Integer userVehicleId)
 	{
 		this.departureLocation = departureLocation;
 		this.arrivalLocation = arrivalLocation;
@@ -111,6 +98,25 @@ public class DriverOffer implements Serializable
 		this.time = time;
 		this.offerStatusId = offerStatusId;
 		this.userVehicleId = userVehicleId;
+	}
+
+	/**
+	 * Instantiate a new driver offer.
+	 *
+	 * @param driverOfferDto driver offer dto
+	 */
+	public DriverOffer(DriverOfferDto driverOfferDto)
+	{
+		this.departureLocation = driverOfferDto.getDepartureLocation();
+		this.arrivalLocation = driverOfferDto.getArrivalLocation();
+		this.date = driverOfferDto.getDate();
+		this.time = driverOfferDto.getTime();
+		if (driverOfferDto.getOfferStatus() != null
+				&& driverOfferDto.getOfferStatus().getId() != null)
+			this.offerStatusId = driverOfferDto.getOfferStatus().getId();
+		if (driverOfferDto.getUserVehicle() != null
+				&& driverOfferDto.getUserVehicle().getId() != null)
+			this.userVehicleId = driverOfferDto.getUserVehicle().getId();
 	}
 
 	/**
@@ -234,35 +240,11 @@ public class DriverOffer implements Serializable
 	}
 
 	/**
-	 * Get the offer status.
-	 *
-	 * @return offer status
-	 */
-	public OfferStatus getOfferStatus()
-	{
-		return offerStatus;
-	}
-
-	/**
-	 * Set the offer status.
-	 *
-	 * @param offerStatus new offer status
-	 */
-	public void setOfferStatus(final OfferStatus offerStatus)
-	{
-		if (offerStatus != null)
-		{
-			this.offerStatus = offerStatus;
-			this.offerStatusId = offerStatus.getId();
-		}
-	}
-
-	/**
 	 * Get the offer status id.
 	 *
 	 * @return offer status id
 	 */
-	public int getOfferStatusId()
+	public Integer getOfferStatusId()
 	{
 		return offerStatusId;
 	}
@@ -272,33 +254,9 @@ public class DriverOffer implements Serializable
 	 *
 	 * @param offerStatusId new offer status id
 	 */
-	public void setOfferStatusId(int offerStatusId)
+	public void setOfferStatusId(Integer offerStatusId)
 	{
 		this.offerStatusId = offerStatusId;
-	}
-
-	/**
-	 * Get the user vehicle.
-	 *
-	 * @return user vehicle
-	 */
-	public UserVehicle getUserVehicle()
-	{
-		return userVehicle;
-	}
-
-	/**
-	 * Set the user vehicle.
-	 *
-	 * @param userVehicle new user vehicle
-	 */
-	public void setUserVehicle(final UserVehicle userVehicle)
-	{
-		if (userVehicle != null)
-		{
-			this.userVehicle = userVehicle;
-			this.userVehicleId = userVehicle.getId();
-		}
 	}
 
 	/**
@@ -306,7 +264,7 @@ public class DriverOffer implements Serializable
 	 *
 	 * @return user vehicle id
 	 */
-	public int getUserVehicleId()
+	public Integer getUserVehicleId()
 	{
 		return userVehicleId;
 	}
@@ -316,115 +274,8 @@ public class DriverOffer implements Serializable
 	 *
 	 * @param userVehicleId new user vehicle id
 	 */
-	public void setUserVehicleId(final int userVehicleId)
+	public void setUserVehicleId(final Integer userVehicleId)
 	{
 		this.userVehicleId = userVehicleId;
-	}
-
-	/**
-	 * Get the driver offer stations.
-	 *
-	 * @return driver offer stations
-	 */
-	public List<DriverOfferStation> getDriverOfferStations()
-	{
-		return driverOfferStations;
-	}
-
-	/**
-	 * Set the driver offer stations.
-	 *
-	 * @param driverOfferStations new driver offer stations
-	 */
-	public void setDriverOfferStations(List<DriverOfferStation> driverOfferStations)
-	{
-		this.driverOfferStations = driverOfferStations;
-
-		for (DriverOfferStation driverOfferStation : driverOfferStations)
-		{
-			this.stationNames.add(driverOfferStation.getStation().getName());
-		}
-	}
-
-	/**
-	 * Add the driver offer station.
-	 *
-	 * @param driverOfferStation driver offer station
-	 */
-	public void addDriverOfferStation(final DriverOfferStation driverOfferStation)
-	{
-		this.driverOfferStations.add(driverOfferStation);
-		this.stationNames.add(driverOfferStation.getStation().getName());
-	}
-
-	/**
-	 * Remove the driver offer station.
-	 *
-	 * @param driverOfferStation driver offer station
-	 */
-	public void removeDriverOfferStation(final DriverOfferStation driverOfferStation)
-	{
-		this.driverOfferStations.remove(driverOfferStation);
-		this.stationNames.remove(driverOfferStation.getStation().getName());
-	}
-
-	/**
-	 * Get the station names.
-	 *
-	 * @return station names
-	 */
-	public List<String> getStationNames()
-	{
-		return stationNames;
-	}
-
-	/**
-	 * Set the station names.
-	 *
-	 * @param stationNames new station names
-	 */
-	public void setStationNames(List<String> stationNames)
-	{
-		this.stationNames = stationNames;
-	}
-
-	/**
-	 * Get the claimer offers.
-	 *
-	 * @return claimer offers
-	 */
-	public List<ClaimerOffer> getClaimerOffers()
-	{
-		return claimerOffers;
-	}
-
-	/**
-	 * Set the claimer offers.
-	 *
-	 * @param claimerOffers new claimer offers
-	 */
-	public void setClaimerOffers(final List<ClaimerOffer> claimerOffers)
-	{
-		this.claimerOffers = claimerOffers;
-	}
-
-	/**
-	 * Add the new claimer offer.
-	 *
-	 * @param claimerOffer new claimer offer
-	 */
-	public void addClaimerOffer(final ClaimerOffer claimerOffer)
-	{
-		this.claimerOffers.add(claimerOffer);
-	}
-
-	/**
-	 * Remove the claimer offer.
-	 *
-	 * @param claimerOffer claimer offer
-	 */
-	public void removeClaimerOffer(final ClaimerOffer claimerOffer)
-	{
-		this.claimerOffers.remove(claimerOffer);
 	}
 }

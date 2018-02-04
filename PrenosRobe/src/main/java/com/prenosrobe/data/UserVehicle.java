@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
 @Table(name = "user_vehicle")
@@ -24,17 +23,11 @@ public class UserVehicle implements Serializable
 	@Column(name = "created_at")
 	private Date createdAt = new Date();
 
-	@Transient
-	private User user;
-
 	@Column(name = "user_id")
-	private int userId;
-
-	@Transient
-	private Vehicle vehicle;
+	private Integer userId;
 
 	@Column(name = "vehicle_id")
-	private int vehicleId;
+	private Integer vehicleId;
 
 	/**
 	 * Instantiate a new UserVehicle.
@@ -49,7 +42,7 @@ public class UserVehicle implements Serializable
 	 * @param userId user id
 	 * @param vehicleId vehicle id
 	 */
-	public UserVehicle(final int userId, final int vehicleId)
+	public UserVehicle(final Integer userId, final Integer vehicleId)
 	{
 		this.userId = userId;
 		this.vehicleId = vehicleId;
@@ -96,35 +89,11 @@ public class UserVehicle implements Serializable
 	}
 
 	/**
-	 * Get the user.
-	 *
-	 * @return user
-	 */
-	public User getUser()
-	{
-		return user;
-	}
-
-	/**
-	 * Set the user.
-	 *
-	 * @param user new user
-	 */
-	public void setUser(final User user)
-	{
-		if (user != null)
-		{
-			this.user = user;
-			this.userId = user.getId();
-		}
-	}
-
-	/**
 	 * Get the user id.
 	 *
 	 * @return user id
 	 */
-	public int getUserId()
+	public Integer getUserId()
 	{
 		return userId;
 	}
@@ -134,33 +103,9 @@ public class UserVehicle implements Serializable
 	 *
 	 * @param userId new user id
 	 */
-	public void setUserId(final int userId)
+	public void setUserId(final Integer userId)
 	{
 		this.userId = userId;
-	}
-
-	/**
-	 * Get the vehicle.
-	 *
-	 * @return vehicle
-	 */
-	public Vehicle getVehicle()
-	{
-		return vehicle;
-	}
-
-	/**
-	 * Set the vehicle.
-	 *
-	 * @param vehicle new vehicle
-	 */
-	public void setVehicle(final Vehicle vehicle)
-	{
-		if (vehicle != null)
-		{
-			this.vehicle = vehicle;
-			this.vehicleId = vehicle.getId();
-		}
 	}
 
 	/**
@@ -168,7 +113,7 @@ public class UserVehicle implements Serializable
 	 *
 	 * @return vehicle id
 	 */
-	public int getVehicleId()
+	public Integer getVehicleId()
 	{
 		return vehicleId;
 	}
@@ -178,7 +123,7 @@ public class UserVehicle implements Serializable
 	 *
 	 * @param vehicleId new vehicle id
 	 */
-	public void setVehicleId(final int vehicleId)
+	public void setVehicleId(final Integer vehicleId)
 	{
 		this.vehicleId = vehicleId;
 	}

@@ -9,4 +9,6 @@ import com.prenosrobe.data.ClaimerOffer;
 public interface ClaimerOfferRepository extends CrudRepository<ClaimerOffer, Integer>
 {
 	List<ClaimerOffer> findByUserId(Integer userId);
+
+	List<ClaimerOffer> findByDriverOfferId(Integer driverOfferId);
 }
