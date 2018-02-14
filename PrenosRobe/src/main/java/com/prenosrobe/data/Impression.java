@@ -9,7 +9,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "impression")
@@ -24,30 +28,42 @@ public class Impression implements Serializable
 	@Column(name = "created_at")
 	private Date createdAt = new Date();
 
+	@NotNull
 	@Column(name = "is_driver")
-	private boolean isDriver;
+	private Boolean driver;
 
-	@Transient
-	private User user;
-
+	@NotNull
 	@Column(name = "user_id")
-	private int userId;
+	private Integer userId;
 
+	@NotNull
+	@Min(1)
+	@Max(10)
 	@Column(name = "picked_on_time")
-	private int pickedOnTime;
+	private Integer pickedOnTime;
 
+	@NotNull
+	@Min(1)
+	@Max(10)
 	@Column(name = "delivered_on_time")
-	private int deliveredOnTime;
+	private Integer deliveredOnTime;
 
+	@Min(1)
+	@Max(10)
 	@Column(name = "delivered_undamaged")
-	private int deliveredUndamaged;
+	private Integer deliveredUndamaged;
 
+	@Min(1)
+	@Max(10)
 	@Column(name = "delivered")
-	private int delivered;
+	private Integer delivered;
 
+	@Min(1)
+	@Max(10)
 	@Column(name = "correctly_paid")
-	private int correctlyPaid;
+	private Integer correctlyPaid;
 
+	@NotEmpty
 	@Column(name = "comment")
 	private String comment;
 
@@ -56,51 +72,6 @@ public class Impression implements Serializable
 	 */
 	public Impression()
 	{
-	}
-
-	/**
-	 * Instantiate a new Impression if isDriver is true.
-	 *
-	 * @param isDriver is driver
-	 * @param userId user id
-	 * @param pickedOnTime picked on time
-	 * @param deliveredOnTime delivered on time
-	 * @param deliveredUndamaged delivered undamaged
-	 * @param delivered delivered
-	 * @param comment comment
-	 */
-	public Impression(final boolean isDriver, final int userId, final int pickedOnTime,
-			final int deliveredOnTime, final int deliveredUndamaged, final int delivered,
-			final String comment)
-	{
-		this.isDriver = isDriver;
-		this.userId = userId;
-		this.pickedOnTime = pickedOnTime;
-		this.deliveredOnTime = deliveredOnTime;
-		this.deliveredUndamaged = deliveredUndamaged;
-		this.delivered = delivered;
-		this.comment = comment;
-	}
-
-	/**
-	 * Instantiate a new Impression if isDriver is false.
-	 *
-	 * @param isDriver is driver
-	 * @param userId user id
-	 * @param pickedOnTime picked on time
-	 * @param deliveredOnTime delivered on time
-	 * @param correctlyPaid correctly paid
-	 * @param comment comment
-	 */
-	public Impression(final boolean isDriver, final int userId, final int pickedOnTime,
-			final int deliveredOnTime, final int correctlyPaid, final String comment)
-	{
-		this.isDriver = isDriver;
-		this.userId = userId;
-		this.pickedOnTime = pickedOnTime;
-		this.deliveredOnTime = deliveredOnTime;
-		this.correctlyPaid = correctlyPaid;
-		this.comment = comment;
 	}
 
 	/**
@@ -148,43 +119,19 @@ public class Impression implements Serializable
 	 *
 	 * @return true, if is driver
 	 */
-	public boolean isDriver()
+	public Boolean isDriver()
 	{
-		return isDriver;
+		return driver;
 	}
 
 	/**
 	 * Set the driver.
 	 *
-	 * @param isDriver new driver
+	 * @param driver new driver
 	 */
-	public void setDriver(final boolean isDriver)
+	public void setDriver(final Boolean driver)
 	{
-		this.isDriver = isDriver;
-	}
-
-	/**
-	 * Get the user.
-	 *
-	 * @return user
-	 */
-	public User getUser()
-	{
-		return user;
-	}
-
-	/**
-	 * Set the user.
-	 *
-	 * @param user new user
-	 */
-	public void setUser(final User user)
-	{
-		if (user != null)
-		{
-			this.user = user;
-			this.userId = user.getId();
-		}
+		this.driver = driver;
 	}
 
 	/**
@@ -202,7 +149,7 @@ public class Impression implements Serializable
 	 *
 	 * @param userId new user id
 	 */
-	public void setUserId(final int userId)
+	public void setUserId(final Integer userId)
 	{
 		this.userId = userId;
 	}
@@ -212,7 +159,7 @@ public class Impression implements Serializable
 	 *
 	 * @return picked on time
 	 */
-	public int getPickedOnTime()
+	public Integer getPickedOnTime()
 	{
 		return pickedOnTime;
 	}
@@ -222,7 +169,7 @@ public class Impression implements Serializable
 	 *
 	 * @param pickedOnTime new picked on time
 	 */
-	public void setPickedOnTime(final int pickedOnTime)
+	public void setPickedOnTime(final Integer pickedOnTime)
 	{
 		this.pickedOnTime = pickedOnTime;
 	}
@@ -232,7 +179,7 @@ public class Impression implements Serializable
 	 *
 	 * @return delivered on time
 	 */
-	public int getDeliveredOnTime()
+	public Integer getDeliveredOnTime()
 	{
 		return deliveredOnTime;
 	}
@@ -242,7 +189,7 @@ public class Impression implements Serializable
 	 *
 	 * @param deliveredOnTime new delivered on time
 	 */
-	public void setDeliveredOnTime(final int deliveredOnTime)
+	public void setDeliveredOnTime(final Integer deliveredOnTime)
 	{
 		this.deliveredOnTime = deliveredOnTime;
 	}
@@ -252,7 +199,7 @@ public class Impression implements Serializable
 	 *
 	 * @return delivered undamaged
 	 */
-	public int getDeliveredUndamaged()
+	public Integer getDeliveredUndamaged()
 	{
 		return deliveredUndamaged;
 	}
@@ -262,7 +209,7 @@ public class Impression implements Serializable
 	 *
 	 * @param deliveredUndamaged new delivered undamaged
 	 */
-	public void setDeliveredUndamaged(final int deliveredUndamaged)
+	public void setDeliveredUndamaged(final Integer deliveredUndamaged)
 	{
 		this.deliveredUndamaged = deliveredUndamaged;
 	}
@@ -272,7 +219,7 @@ public class Impression implements Serializable
 	 *
 	 * @return delivered
 	 */
-	public int getDelivered()
+	public Integer getDelivered()
 	{
 		return delivered;
 	}
@@ -282,7 +229,7 @@ public class Impression implements Serializable
 	 *
 	 * @param delivered new delivered
 	 */
-	public void setDelivered(final int delivered)
+	public void setDelivered(final Integer delivered)
 	{
 		this.delivered = delivered;
 	}
@@ -292,7 +239,7 @@ public class Impression implements Serializable
 	 *
 	 * @return correctly paid
 	 */
-	public int getCorrectlyPaid()
+	public Integer getCorrectlyPaid()
 	{
 		return correctlyPaid;
 	}
@@ -302,7 +249,7 @@ public class Impression implements Serializable
 	 *
 	 * @param correctlyPaid new correctly paid
 	 */
-	public void setCorrectlyPaid(int correctlyPaid)
+	public void setCorrectlyPaid(final Integer correctlyPaid)
 	{
 		this.correctlyPaid = correctlyPaid;
 	}

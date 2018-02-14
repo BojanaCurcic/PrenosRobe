@@ -9,4 +9,6 @@ import com.prenosrobe.data.VehicleType;
 public interface VehicleTypeRepository extends CrudRepository<VehicleType, Integer>
 {
 	List<VehicleType> findAll();
+	
+	VehicleType findByName(String name);
 }

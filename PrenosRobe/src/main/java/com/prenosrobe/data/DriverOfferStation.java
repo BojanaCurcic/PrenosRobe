@@ -8,8 +8,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "driver_offer_station")
@@ -24,23 +27,22 @@ public class DriverOfferStation implements Serializable
 	@Column(name = "created_at")
 	private Date createdAt = new Date();
 
-	@Transient
-	private DriverOffer driverOffer;
-
+	@NotNull
 	@Column(name = "driver_offer_id")
-	private int driverOfferId;
+	private Integer driverOfferId;
 
-	@Transient
+	@Valid
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "station_id", referencedColumnName = "station_id")
 	private Station station;
 
-	@Column(name = "station_id")
-	private int stationId;
-
+	@NotNull
 	@Column(name = "serial_number")
-	private int serialNumber;
+	private Integer serialNumber;
 
 	@Column(name = "active")
-	private boolean active = true;
+	private Boolean active = true;
 
 	/**
 	 * Instantiate a new DriverOfferStation.
@@ -53,13 +55,14 @@ public class DriverOfferStation implements Serializable
 	 * Instantiate a new DriverOfferStation.
 	 *
 	 * @param driverOfferId driver offer id
-	 * @param stationId station id
+	 * @param station station
 	 * @param serialNumber serial number
 	 */
-	public DriverOfferStation(final int driverOfferId, final int stationId, final int serialNumber)
+	public DriverOfferStation(final Integer driverOfferId, final Station station,
+			final Integer serialNumber)
 	{
 		this.driverOfferId = driverOfferId;
-		this.stationId = stationId;
+		this.station = station;
 		this.serialNumber = serialNumber;
 	}
 
@@ -104,35 +107,11 @@ public class DriverOfferStation implements Serializable
 	}
 
 	/**
-	 * Get the driver offer.
-	 *
-	 * @return driver offer
-	 */
-	public DriverOffer getDriverOffer()
-	{
-		return driverOffer;
-	}
-
-	/**
-	 * Set the driver offer.
-	 *
-	 * @param driverOffer new driver offer
-	 */
-	public void setDriverOffer(final DriverOffer driverOffer)
-	{
-		if (driverOffer != null)
-		{
-			this.driverOffer = driverOffer;
-			this.driverOfferId = driverOffer.getId();
-		}
-	}
-
-	/**
 	 * Get the driver offer id.
 	 *
 	 * @return driver offer id
 	 */
-	public int getDriverOfferId()
+	public Integer getDriverOfferId()
 	{
 		return driverOfferId;
 	}
@@ -142,7 +121,7 @@ public class DriverOfferStation implements Serializable
 	 *
 	 * @param driverOfferId new driver offer id
 	 */
-	public void setDriverOfferId(final int driverOfferId)
+	public void setDriverOfferId(final Integer driverOfferId)
 	{
 		this.driverOfferId = driverOfferId;
 	}
@@ -164,31 +143,7 @@ public class DriverOfferStation implements Serializable
 	 */
 	public void setStation(final Station station)
 	{
-		if (station != null)
-		{
-			this.station = station;
-			this.stationId = station.getId();
-		}
-	}
-
-	/**
-	 * Get the station id.
-	 *
-	 * @return station id
-	 */
-	public int getStationId()
-	{
-		return stationId;
-	}
-
-	/**
-	 * Set the station id.
-	 *
-	 * @param stationId new station id
-	 */
-	public void setStationId(final int stationId)
-	{
-		this.stationId = stationId;
+		this.station = station;
 	}
 
 	/**
@@ -196,7 +151,7 @@ public class DriverOfferStation implements Serializable
 	 *
 	 * @return serial number
 	 */
-	public int getSerialNumber()
+	public Integer getSerialNumber()
 	{
 		return serialNumber;
 	}
@@ -206,7 +161,7 @@ public class DriverOfferStation implements Serializable
 	 *
 	 * @param serialNumber new serial number
 	 */
-	public void setSerialNumber(final int serialNumber)
+	public void setSerialNumber(final Integer serialNumber)
 	{
 		this.serialNumber = serialNumber;
 	}
@@ -216,7 +171,7 @@ public class DriverOfferStation implements Serializable
 	 *
 	 * @return true, if is active
 	 */
-	public boolean isActive()
+	public Boolean isActive()
 	{
 		return active;
 	}
@@ -226,7 +181,7 @@ public class DriverOfferStation implements Serializable
 	 *
 	 * @param active new active
 	 */
-	public void setActive(final boolean active)
+	public void setActive(final Boolean active)
 	{
 		this.active = active;
 	}

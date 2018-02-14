@@ -8,7 +8,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "vehicle")
@@ -23,11 +29,15 @@ public class Vehicle implements Serializable
 	@Column(name = "created_at")
 	private Date createdAt = new Date();
 
+	@NotEmpty
 	@Column(name = "registration_number")
 	private String registrationNumber;
 
-	@Column(name = "vehicle_type_id")
-	private Integer vehicleTypeId;
+	@Valid
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "vehicle_type_id", referencedColumnName = "vehicle_type_id")
+	private VehicleType vehicleType;
 
 	/**
 	 * Instantiate a new Vehicle.
@@ -40,12 +50,12 @@ public class Vehicle implements Serializable
 	 * Instantiate a new Vehicle.
 	 *
 	 * @param registrationNumber registration number
-	 * @param vehicleTypeId vehicle type id
+	 * @param vehicleType vehicle type
 	 */
-	public Vehicle(final String registrationNumber, final Integer vehicleTypeId)
+	public Vehicle(final String registrationNumber, final VehicleType vehicleType)
 	{
 		this.registrationNumber = registrationNumber;
-		this.vehicleTypeId = vehicleTypeId;
+		this.vehicleType = vehicleType;
 	}
 
 	/**
@@ -109,22 +119,22 @@ public class Vehicle implements Serializable
 	}
 
 	/**
-	 * Get the vehicle type id.
+	 * Get the vehicle type.
 	 *
-	 * @return vehicle type id
+	 * @return vehicle type
 	 */
-	public Integer getVehicleTypeId()
+	public VehicleType getVehicleType()
 	{
-		return vehicleTypeId;
+		return vehicleType;
 	}
 
 	/**
-	 * Set the vehicle type id.
+	 * Set the vehicle type.
 	 *
-	 * @param vehicleTypeId new vehicle type id
+	 * @param vehicleType new vehicle type
 	 */
-	public void setVehicleTypeId(final Integer vehicleTypeId)
+	public void setVehicleType(final VehicleType vehicleType)
 	{
-		this.vehicleTypeId = vehicleTypeId;
+		this.vehicleType = vehicleType;
 	}
 }

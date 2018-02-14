@@ -8,7 +8,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -41,17 +44,19 @@ public class ClaimerOffer implements Serializable
 	@Column(name = "photo")
 	private String photo;
 
+	@Valid
 	@NotNull
-	@Column(name = "user_id")
-	private Integer userId;
+	@ManyToOne
+	@JoinColumn(name = "user_id", referencedColumnName = "user_id")
+	private User user;
 
-	@NotNull
-	@Column(name = "driver_offer_id")
-	private Integer driverOfferId;
+	@ManyToOne
+	@JoinColumn(name = "driver_offer_id", referencedColumnName = "driver_offer_id")
+	private DriverOffer driverOffer;
 
-	@NotNull
-	@Column(name = "offer_status_id")
-	private Integer offerStatusId;
+	@ManyToOne
+	@JoinColumn(name = "offer_status_id", referencedColumnName = "offer_status_id")
+	private OfferStatus offerStatus;
 
 	/**
 	 * Instantiate a new ClaimerOffer.
@@ -66,19 +71,20 @@ public class ClaimerOffer implements Serializable
 	 * @param departureLocation departure location
 	 * @param arrivalLocation arrival location
 	 * @param data data
-	 * @param userId user id
-	 * @param driverOfferId driver offer id
-	 * @param offerStatusId offer status id
+	 * @param user user
+	 * @param driverOffer driver offer
+	 * @param offerStatus offer status
 	 */
 	public ClaimerOffer(final String departureLocation, final String arrivalLocation,
-			final String data, final Integer userId, final Integer driverOfferId, final Integer offerStatusId)
+			final String data, final User user, final DriverOffer driverOffer,
+			final OfferStatus offerStatus)
 	{
 		this.departureLocation = departureLocation;
 		this.arrivalLocation = arrivalLocation;
 		this.data = data;
-		this.userId = userId;
-		this.driverOfferId = driverOfferId;
-		this.offerStatusId = offerStatusId;
+		this.user = user;
+		this.driverOffer = driverOffer;
+		this.offerStatus = offerStatus;
 	}
 
 	/**
@@ -88,21 +94,21 @@ public class ClaimerOffer implements Serializable
 	 * @param arrivalLocation arrival location
 	 * @param data data
 	 * @param photo photo
-	 * @param userId user id
-	 * @param driverOfferId driver offer id
-	 * @param offerStatusId offer status id
+	 * @param user user
+	 * @param driverOffer driver offer
+	 * @param offerStatus offer status
 	 */
 	public ClaimerOffer(final String departureLocation, final String arrivalLocation,
-			final String data, final String photo, final Integer userId, final Integer driverOfferId,
-			final Integer offerStatusId)
+			final String data, final String photo, final User user, final DriverOffer driverOffer,
+			final OfferStatus offerStatus)
 	{
 		this.departureLocation = departureLocation;
 		this.arrivalLocation = arrivalLocation;
 		this.data = data;
 		this.photo = photo;
-		this.userId = userId;
-		this.driverOfferId = driverOfferId;
-		this.offerStatusId = offerStatusId;
+		this.user = user;
+		this.driverOffer = driverOffer;
+		this.offerStatus = offerStatus;
 	}
 
 	/**
@@ -226,62 +232,62 @@ public class ClaimerOffer implements Serializable
 	}
 
 	/**
-	 * Get the user id.
+	 * Get the user.
 	 *
-	 * @return user id
+	 * @return user 
 	 */
-	public Integer getUserId()
+	public User getUser()
 	{
-		return userId;
+		return user;
 	}
 
 	/**
-	 * Set the user id.
+	 * Set the user.
 	 *
-	 * @param userId new user id
+	 * @param user new user 
 	 */
-	public void setUserId(final Integer userId)
+	public void setUser(final User user)
 	{
-		this.userId = userId;
+		this.user = user;
 	}
 
 	/**
-	 * Get the driver offer id.
+	 * Get the driver offer.
 	 *
-	 * @return driver offer id
+	 * @return driver offer
 	 */
-	public Integer getDriverOfferId()
+	public DriverOffer getDriverOfferId()
 	{
-		return driverOfferId;
+		return driverOffer;
 	}
 
 	/**
-	 * Set the driver offer id.
+	 * Set the driver offer.
 	 *
-	 * @param driverOfferId new driver offer id
+	 * @param driverOffer new driver offer 
 	 */
-	public void setDriverOfferId(final Integer driverOfferId)
+	public void setDriverOffer(final DriverOffer driverOffer)
 	{
-		this.driverOfferId = driverOfferId;
+		this.driverOffer = driverOffer;
 	}
 
 	/**
-	 * Get the offer status id.
+	 * Get the offer status.
 	 *
-	 * @return offer status id
+	 * @return offer status 
 	 */
-	public Integer getOfferStatusId()
+	public OfferStatus getOfferStatus()
 	{
-		return offerStatusId;
+		return offerStatus;
 	}
 
 	/**
-	 * Set the offer status id.
+	 * Set the offer status.
 	 *
-	 * @param offerStatusId new offer status id
+	 * @param offerStatus new offer status 
 	 */
-	public void setOfferStatusId(final Integer offerStatusId)
+	public void setOfferStatus(final OfferStatus offerStatus)
 	{
-		this.offerStatusId = offerStatusId;
+		this.offerStatus = offerStatus;
 	}
 }

@@ -5,18 +5,19 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.prenosrobe.data.Area;
 import com.prenosrobe.data.DriverOffer;
-import com.prenosrobe.dto.DriverOfferDto;
-import com.prenosrobe.dto.OfferStatusDto;
-import com.prenosrobe.dto.UserVehicleDto;
-import com.prenosrobe.dto.VehicleTypeDto;
+import com.prenosrobe.data.OfferStatus;
+import com.prenosrobe.data.Station;
+import com.prenosrobe.data.UserVehicle;
+import com.prenosrobe.data.VehicleType;
 import com.prenosrobe.service.DriverOfferService;
 import com.prenosrobe.service.UserService;
 
@@ -30,23 +31,23 @@ public class DriverOfferController
 	private UserService userService;
 
 	/**
-	 * Add the driver offer. Parameter driverOfferDto should have set fields 'departureLocation', 
-	 * 'arrivalLocation', 'date', 'time', 'offerStatus' and 'userVehicle'. 'offerStatus' and 
-	 * 'userVehicle' should have set fields 'id'.
+	 * Add the driver offer. Parameter driverOffer should have set fields 'departureLocation', 
+	 * 'arrivalLocation', 'date', 'time', 'offerStatus' and 'userVehicle'. 'offerStatus' should 
+	 * have set field 'name' and 'userVehicle' should have set all fields.
 	 *
 	 * @param token token used for user identification
-	 * @param driverOfferDto driver offer
-	 * @return driverOfferDto driver offer with all its information
+	 * @param driverOffer driver offer
+	 * @return driverOffer driver offer with all its information
 	 */
-	@RequestMapping(value = "/driverOffer/add", method = RequestMethod.POST)
+	@PostMapping("/driverOffer/add")
 	public ResponseEntity<?> add(@RequestHeader(value = "token") String token,
-			@RequestBody DriverOfferDto driverOfferDto)
+			@RequestBody DriverOffer driverOffer)
 	{
 		if (userService.authentication(token))
 		{
-			String errors = driverOfferService.add(driverOfferDto);
+			String errors = driverOfferService.add(driverOffer);
 			if (errors.isEmpty())
-				return new ResponseEntity<>(driverOfferDto, HttpStatus.CREATED);
+				return new ResponseEntity<>(driverOffer, HttpStatus.CREATED);
 
 			return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 		}
@@ -58,19 +59,19 @@ public class DriverOfferController
 	 *
 	 * @param id driver offer id
 	 * @param token token used for user identification
-	 * @return driverOfferDto driver offer with all its information
+	 * @return driverOffer driver offer with all its information
 	 */
-	@RequestMapping(value = "/driverOffer/{id}", method = RequestMethod.GET)
+	@GetMapping("/driverOffer/{id}")
 	public ResponseEntity<?> getDriverOfferById(@PathVariable Long id,
 			@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
 		{
-			DriverOfferDto driverOfferDto = driverOfferService.getDriverOfferById(id.intValue());
-			if (driverOfferDto != null)
-				return new ResponseEntity<>(driverOfferDto, HttpStatus.OK);
+			DriverOffer driverOffer = driverOfferService.getDriverOfferById(id.intValue());
+			if (driverOffer != null)
+				return new ResponseEntity<>(driverOffer, HttpStatus.OK);
 
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Unknown driver offer. ", HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 	}
@@ -81,8 +82,8 @@ public class DriverOfferController
 	 * @param token token used for user identification
 	 * @return my driver offers
 	 */
-	@RequestMapping(value = "/myDriverOffers", method = RequestMethod.GET)
-	public ResponseEntity<List<DriverOfferDto>> getMyDriverOffers(
+	@GetMapping("/myDriverOffers")
+	public ResponseEntity<List<DriverOffer>> getMyDriverOffers(
 			@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
@@ -99,16 +100,41 @@ public class DriverOfferController
 	 * @param driverOffer the driver offer
 	 * @return the response entity
 	 */
-	@RequestMapping(value = "/driverOffer/update", method = RequestMethod.GET)
-	public ResponseEntity<String> updateDriverOffer(@RequestHeader(value = "token") String token,
-			@RequestBody DriverOfferDto driverOffer)
+	@PostMapping("/driverOffer/update")
+	public ResponseEntity<?> updateDriverOffer(@RequestHeader(value = "token") String token,
+			@RequestBody DriverOffer driverOffer)
 	{
 		if (userService.authentication(token))
 		{
-//			if (driverOfferService.updateDriverOffer(driverOffer))
-//				return new ResponseEntity<>(HttpStatus.OK);
+			if (driverOfferService.updateDriverOffer(driverOffer))
+				return new ResponseEntity<>("updateDriverOffer is not implemented.", HttpStatus.OK);
 
 			return new ResponseEntity<>("Unknown driverOffer.", HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	}
+
+	/**
+	 * Update driver offer status.
+	 * 
+	 * @param token token used for user identification
+	 * @param offerStatusName offer status name
+	 * @param driverOffer the driver offer
+	 * @return updatedDriverOffer updated driver offer
+	 */
+	@PostMapping("/driverOffer/updateStatus")
+	public ResponseEntity<?> updateDriverOfferStatus(@RequestHeader(value = "token") String token,
+			@RequestHeader(value = "offerStatusName") String offerStatusName,
+			@RequestBody DriverOffer driverOffer)
+	{
+		if (userService.authentication(token))
+		{
+			String errors = driverOfferService.updateDriverOfferStatus(driverOffer,
+					offerStatusName);
+			if (errors.isEmpty())
+				return new ResponseEntity<>(driverOffer, HttpStatus.OK);
+
+			return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 	}
@@ -119,7 +145,7 @@ public class DriverOfferController
 	 * @param token token used for user identification
 	 * @return driver offers list of all driver offers
 	 */
-	@RequestMapping(value = "/driverOffers", method = RequestMethod.GET)
+	@GetMapping("/driverOffers")
 	public ResponseEntity<List<DriverOffer>> getAllDriverOffers(
 			@RequestHeader(value = "token") String token)
 	{
@@ -140,13 +166,13 @@ public class DriverOfferController
 	 * @param token token used for user identification
 	 * @return offerStatuses list of all supported offer statuses
 	 */
-	@RequestMapping(value = "/offerStatuses", method = RequestMethod.GET)
-	public ResponseEntity<List<OfferStatusDto>> getAllOfferStatuses(
+	@GetMapping("/offerStatuses")
+	public ResponseEntity<List<OfferStatus>> getAllOfferStatuses(
 			@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
 		{
-			List<OfferStatusDto> offerStatuses = driverOfferService.getAllOfferStatuses();
+			List<OfferStatus> offerStatuses = driverOfferService.getAllOfferStatuses();
 			if (!offerStatuses.isEmpty())
 				return new ResponseEntity<>(offerStatuses, HttpStatus.OK);
 
@@ -162,13 +188,13 @@ public class DriverOfferController
 	 * @param registrationNumber registration number
 	 * @return the vehicle by registration number
 	 */
-	@RequestMapping(value = "/userVehicle/{registrationNumber}", method = RequestMethod.GET)
+	@GetMapping("/userVehicle/{registrationNumber}")
 	public ResponseEntity<?> getUserVehicleByRegistrationNumber(
 			@RequestHeader(value = "token") String token, @PathVariable String registrationNumber)
 	{
 		if (userService.authentication(token))
 		{
-			UserVehicleDto foundUserVehicle = driverOfferService
+			UserVehicle foundUserVehicle = driverOfferService
 					.getUserVehicleByRegistrationNumber(registrationNumber, token);
 			if (foundUserVehicle != null)
 				return new ResponseEntity<>(foundUserVehicle, HttpStatus.OK);
@@ -184,15 +210,56 @@ public class DriverOfferController
 	 * @param token token used for user identification
 	 * @return vehicleTypes list of all supported vehicle types
 	 */
-	@RequestMapping(value = "/vehicleTypes", method = RequestMethod.GET)
-	public ResponseEntity<List<VehicleTypeDto>> getAllVehicleTypes(
+	@GetMapping("/vehicleTypes")
+	public ResponseEntity<List<VehicleType>> getAllVehicleTypes(
 			@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
 		{
-			List<VehicleTypeDto> vehicleTypes = driverOfferService.getAllVehicleTypes();
+			List<VehicleType> vehicleTypes = driverOfferService.getAllVehicleTypes();
 			if (!vehicleTypes.isEmpty())
 				return new ResponseEntity<>(vehicleTypes, HttpStatus.OK);
+
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	}
+
+	/**
+	 * Get the all stations.
+	 *
+	 * @param token token used for user identification
+	 * @return stations list of all currently supported stations
+	 */
+	@GetMapping("/stations")
+	public ResponseEntity<List<Station>> getAllStations(
+			@RequestHeader(value = "token") String token)
+	{
+		if (userService.authentication(token))
+		{
+			List<Station> stations = driverOfferService.getAllStations();
+			if (!stations.isEmpty())
+				return new ResponseEntity<>(stations, HttpStatus.OK);
+
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	}
+
+	/**
+	 * Get the all areas.
+	 *
+	 * @param token token used for user identification
+	 * @return areas list of all currently supported areas
+	 */
+	@GetMapping("/areas")
+	public ResponseEntity<List<Area>> getAllAreas(@RequestHeader(value = "token") String token)
+	{
+		if (userService.authentication(token))
+		{
+			List<Area> areas = driverOfferService.getAllAreas();
+			if (!areas.isEmpty())
+				return new ResponseEntity<>(areas, HttpStatus.OK);
 
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}

@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 @Entity
 @Table(name = "vehicle_type")
 @SuppressWarnings("serial")
@@ -23,6 +25,7 @@ public class VehicleType implements Serializable
 	@Column(name = "created_at")
 	private Date createdAt = new Date();
 
+	@NotEmpty
 	@Column(name = "name")
 	private String name;
 

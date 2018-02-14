@@ -4,12 +4,23 @@ public class StorageFileNotFoundException extends StorageException
 {
 	private static final long serialVersionUID = -7527185539634725504L;
 
-	public StorageFileNotFoundException(String message)
+	/**
+	 * Instantiate a new storage file not found exception.
+	 *
+	 * @param message message
+	 */
+	public StorageFileNotFoundException(final String message)
 	{
 		super(message);
 	}
 
-	public StorageFileNotFoundException(String message, Throwable cause)
+	/**
+	 * Instantiate a new storage file not found exception.
+	 *
+	 * @param message message
+	 * @param cause cause
+	 */
+	public StorageFileNotFoundException(final String message, final Throwable cause)
 	{
 		super(message, cause);
 	}

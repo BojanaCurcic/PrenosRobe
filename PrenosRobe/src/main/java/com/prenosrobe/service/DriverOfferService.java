@@ -11,23 +11,18 @@ import javax.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.prenosrobe.data.ClaimerOffer;
+import com.prenosrobe.data.Area;
 import com.prenosrobe.data.DriverOffer;
 import com.prenosrobe.data.OfferStatus;
+import com.prenosrobe.data.Station;
 import com.prenosrobe.data.User;
 import com.prenosrobe.data.UserVehicle;
 import com.prenosrobe.data.Vehicle;
 import com.prenosrobe.data.VehicleType;
-import com.prenosrobe.dto.ClaimerOfferDto;
-import com.prenosrobe.dto.DriverOfferDto;
-import com.prenosrobe.dto.OfferStatusDto;
-import com.prenosrobe.dto.UserDto;
-import com.prenosrobe.dto.UserVehicleDto;
-import com.prenosrobe.dto.VehicleDto;
-import com.prenosrobe.dto.VehicleTypeDto;
-import com.prenosrobe.repositories.ClaimerOfferRepository;
+import com.prenosrobe.repositories.AreaRepository;
 import com.prenosrobe.repositories.DriverOfferRepository;
 import com.prenosrobe.repositories.OfferStatusRepository;
+import com.prenosrobe.repositories.StationRepository;
 import com.prenosrobe.repositories.UserRepository;
 import com.prenosrobe.repositories.UserVehicleRepository;
 import com.prenosrobe.repositories.VehicleRepository;
@@ -55,33 +50,32 @@ public class DriverOfferService
 	private VehicleTypeRepository vehicleTypeRepository;
 
 	@Autowired
-	private ClaimerOfferRepository claimerOfferRepository;
+	private StationRepository stationRepository;
 
 	@Autowired
-	private UserService userService;
+	private AreaRepository areaRepository;
 
 	private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
 	/**
-	 * Add the driver offer. Parameter driverOfferDto should have set fields 'departureLocation', 
-	 * 'arrivalLocation', 'date', 'time', 'offerStatus' and 'userVehicle'. 'offerStatus' and 
-	 * 'userVehicle' should have set fields 'id'.
+	 * Add the driver offer. Parameter driverOffer should have set fields 'departureLocation', 
+	 * 'arrivalLocation', 'date', 'time', 'offerStatus' and 'userVehicle'. 'offerStatus' should 
+	 * have set field 'name' and 'userVehicle' should have set all fields.
 	 *
-	 * @param driverOfferDto driver offer
-	 * @return driverOfferDto driver offer with all its information
+	 * @param driverOffer driver offer
+	 * @return driverOffer driver offer with all its information
 	 */
-	public String add(DriverOfferDto driverOfferDto)
+	public String add(DriverOffer driverOffer)
 	{
-		String errors = validateDriverOffer(driverOfferDto);
+		String errors = validateDriverOffer(driverOffer);
 
 		if (errors.isEmpty())
 		{
-			DriverOffer newDriverOffer = driverOfferRepository
-					.save(new DriverOffer(driverOfferDto));
-			driverOfferDto.setId(newDriverOffer.getId());
+			DriverOffer savedDriverOffer = new DriverOffer(driverOffer);
+			driverOfferRepository.save(savedDriverOffer);
+			driverOffer.setId(savedDriverOffer.getId());
 
-			// TODO: STATIONS!!!!!!!!!!!!!!!!
-			addValidStationsIntoBase(driverOfferDto);
+			addValidStationsIntoBase(driverOffer);
 		}
 		return errors;
 	}
@@ -90,17 +84,11 @@ public class DriverOfferService
 	 * Get the driver offer by driver offer id.
 	 *
 	 * @param id driver offer id
-	 * @return driverOfferDto driver offer with all its information
+	 * @return driverOffer driver offer with all its information
 	 */
-	public DriverOfferDto getDriverOfferById(final int id)
+	public DriverOffer getDriverOfferById(final Integer id)
 	{
-		DriverOffer driverOffer = driverOfferRepository.findOne(id);
-		if (driverOffer != null)
-		{
-			return getFullFilledDriverOfferDto(driverOffer);
-		}
-
-		return null;
+		return driverOfferRepository.findOne(id);
 	}
 
 	/**
@@ -109,33 +97,55 @@ public class DriverOfferService
 	 * @return my driver offers
 	 * @param token token used for user identification
 	 */
-	public List<DriverOfferDto> getMyDriverOffers(final String token)
+	public List<DriverOffer> getMyDriverOffers(final String token)
 	{
-		List<DriverOfferDto> myDriverOfferDtos = new ArrayList<>();
+		List<DriverOffer> myDriverOffer = new ArrayList<>();
 
 		User user = userRepository.findByToken(token);
 		List<UserVehicle> userVehicles = userVehicleRepository.findByUserId(user.getId());
 		for (UserVehicle userVehicle : userVehicles)
 		{
-			List<DriverOffer> driverOffers = driverOfferRepository
-					.findByUserVehicleId(userVehicle.getId());
-			for (DriverOffer driverOffer : driverOffers)
-			{
-				DriverOfferDto myDriverOfferDto = new DriverOfferDto(driverOffer);
-				myDriverOfferDto.setOfferStatus(new OfferStatusDto(
-						offersStatusRepository.findOne(driverOffer.getOfferStatusId())));
+			List<DriverOffer> driverOffers = driverOfferRepository.findByUserVehicle(userVehicle);
 
-				myDriverOfferDtos.add(myDriverOfferDto);
-			}
+			driverOffers.iterator().forEachRemaining(driverOffer -> myDriverOffer.add(driverOffer));
 		}
 
-		return myDriverOfferDtos;
+		return myDriverOffer;
 	}
 
-	public boolean updateDriverOffer(DriverOfferDto driverOfferDto)
+	/**
+	 * Update driver offer.
+	 * 
+	 * @param driverOffer the driver offer
+	 */
+	public boolean updateDriverOffer(DriverOffer driverOffer)
 	{
-		// TODO: add logic
+		// TODO: imprelent logic for updating driver offer
 		return true;
+	}
+
+	/**
+	 * Update driver offer status.
+	 *
+	 * @param driverOffer driver offer
+	 * @param offerStatusName offer status name
+	 * @return errors
+	 */
+	public String updateDriverOfferStatus(DriverOffer driverOffer, final String offerStatus)
+	{
+		StringBuilder errors = new StringBuilder();
+		errors.append(validateDriverOffer(driverOffer));
+
+		OfferStatus foundOfferStatus = offersStatusRepository.findByName(offerStatus);
+		if (errors.toString().isEmpty() && foundOfferStatus != null)
+		{
+			driverOffer.setOfferStatus(foundOfferStatus);
+			driverOfferRepository.save(driverOffer);
+		}
+		else
+			errors.append("Unknown offer status. ");
+
+		return errors.toString();
 	}
 
 	/**
@@ -151,29 +161,94 @@ public class DriverOfferService
 	/**
 	 * Validate driver offer.
 	 *
-	 * @param driverOfferDto the driver offer
+	 * @param driverOffer driver offer
 	 * @return errors
 	 */
-	public String validateDriverOffer(DriverOfferDto driverOfferDto)
+	private String validateDriverOffer(DriverOffer driverOffer)
 	{
 		StringBuilder errors = new StringBuilder();
 
 		Set<ConstraintViolation<DriverOffer>> constraintViolations = validator
-				.validate(new DriverOffer(driverOfferDto));
+				.validate(driverOffer);
 		constraintViolations.iterator().forEachRemaining(constrain -> errors.append(
 				"\"" + constrain.getPropertyPath() + "\" " + constrain.getMessage() + ". "));
 
-		if (driverOfferDto.getOfferStatus() != null
-				&& driverOfferDto.getOfferStatus().getId() != null
-				&& offersStatusRepository.findOne(driverOfferDto.getOfferStatus().getId()) == null)
-			errors.append("\"offerStatus\" is unknown. ");
+		if (errors.toString().isEmpty())
+		{
+			// Validate offer status
+			OfferStatus foundOfferStatus = offersStatusRepository
+					.findByName(driverOffer.getOfferStatus().getName());
+			if (foundOfferStatus == null)
+				errors.append("\"offerStatus\" is unknown. ");
+			else
+				driverOffer.setOfferStatus(foundOfferStatus);
 
-		if (driverOfferDto.getUserVehicle() != null
-				&& driverOfferDto.getUserVehicle().getId() != null
-				&& userVehicleRepository.findOne(driverOfferDto.getUserVehicle().getId()) == null)
-			errors.append("\"userVehicle\" is unknown. ");
+			// Find user
+			User foundUser = findUser(driverOffer.getUserVehicle().getUser().getEmail(), errors);
+
+			// Find vehicle
+			Vehicle foundVehicle = findVehicle(
+					driverOffer.getUserVehicle().getVehicle().getRegistrationNumber(),
+					driverOffer.getUserVehicle().getVehicle().getVehicleType().getName(), errors);
+
+			// Validate user vehicle
+			if (foundUser != null && foundVehicle != null)
+			{
+				UserVehicle foundUserVehicle = userVehicleRepository
+						.findByUserIdAndVehicleId(foundUser.getId(), foundVehicle.getId());
+				if (foundUserVehicle == null)
+				{
+					foundUserVehicle = new UserVehicle(foundUser, foundVehicle);
+					userVehicleRepository.save(foundUserVehicle);
+				}
+				driverOffer.setUserVehicle(foundUserVehicle);
+			}
+		}
 
 		return errors.toString();
+	}
+
+	/**
+	 * Find user.
+	 *
+	 * @param email email
+	 * @param errors errors
+	 * @return found user
+	 */
+	private User findUser(final String email, StringBuilder errors)
+	{
+		User foundUser = userRepository.findByEmail(email);
+		if (foundUser == null)
+			errors.append("\"userVehicle.user\" is unknown. ");
+
+		return foundUser;
+	}
+
+	/**
+	 * Find vehicle.
+	 *
+	 * @param registrationNumber registration number
+	 * @param vehicleTypeName vehicle type name
+	 * @param errors errors
+	 * @return found vehicle
+	 */
+	private Vehicle findVehicle(final String registrationNumber, final String vehicleTypeName,
+			StringBuilder errors)
+	{
+		Vehicle foundVehicle = vehicleRepository.findByRegistrationNumber(registrationNumber);
+		if (foundVehicle == null)
+		{
+			VehicleType foundVehicleType = vehicleTypeRepository.findByName(vehicleTypeName);
+			if (foundVehicleType == null)
+				errors.append("\"userVehicle.vehicle.vehicleType\" is unknown. ");
+			else
+			{
+				foundVehicle = new Vehicle(registrationNumber, foundVehicleType);
+				vehicleRepository.save(foundVehicle);
+			}
+		}
+
+		return foundVehicle;
 	}
 
 	/**
@@ -181,14 +256,9 @@ public class DriverOfferService
 	 *
 	 * @return offerStatuses list of all supported offer statuses
 	 */
-	public List<OfferStatusDto> getAllOfferStatuses()
+	public List<OfferStatus> getAllOfferStatuses()
 	{
-		List<OfferStatus> offerStatuses = offersStatusRepository.findAll();
-		List<OfferStatusDto> offerStatusesDtos = new ArrayList<>();
-		offerStatuses.iterator().forEachRemaining(
-				offerStatus -> offerStatusesDtos.add(new OfferStatusDto(offerStatus)));
-
-		return offerStatusesDtos;
+		return offersStatusRepository.findAll();
 	}
 
 	/**
@@ -197,29 +267,22 @@ public class DriverOfferService
 	 * @param registrationNumber registration number
 	 * @return the vehicle by registration number
 	 */
-	public UserVehicleDto getUserVehicleByRegistrationNumber(final String registrationNumber,
+	public UserVehicle getUserVehicleByRegistrationNumber(final String registrationNumber,
 			String token)
 	{
-		UserVehicleDto userVehicleDto = null;
+		UserVehicle foundUserVehicle = null;
 		Vehicle foundVehicle = vehicleRepository.findByRegistrationNumber(registrationNumber);
 		User foundUser = userRepository.findByToken(token);
 		if (foundVehicle != null && foundUser != null)
 		{
-			UserVehicle foundUserVehicle = userVehicleRepository
-					.findByUserIdAndVehicleId(foundUser.getId(), foundVehicle.getId());
+			foundUserVehicle = userVehicleRepository.findByUserIdAndVehicleId(foundUser.getId(),
+					foundVehicle.getId());
 			if (foundUserVehicle == null)
 				foundUserVehicle = userVehicleRepository
-						.save(new UserVehicle(foundUser.getId(), foundVehicle.getId()));
-
-			VehicleDto vehicleDto = new VehicleDto(foundVehicle);
-			vehicleDto.setVehicleType(new VehicleTypeDto(
-					vehicleTypeRepository.findOne(foundVehicle.getVehicleTypeId())));
-
-			userVehicleDto = new UserVehicleDto(foundUserVehicle.getId(), new UserDto(foundUser),
-					vehicleDto);
+						.save(new UserVehicle(foundUser, foundVehicle));
 		}
 
-		return userVehicleDto;
+		return foundUserVehicle;
 	}
 
 	/**
@@ -227,68 +290,38 @@ public class DriverOfferService
 	 *
 	 * @return vehicleTypes list of all supported vehicle types
 	 */
-	public List<VehicleTypeDto> getAllVehicleTypes()
+	public List<VehicleType> getAllVehicleTypes()
 	{
-		List<VehicleType> vehicleTypes = vehicleTypeRepository.findAll();
-		List<VehicleTypeDto> vehicleTypeDtos = new ArrayList<>();
-		vehicleTypes.iterator().forEachRemaining(
-				vehicleType -> vehicleTypeDtos.add(new VehicleTypeDto(vehicleType)));
-
-		return vehicleTypeDtos;
+		return vehicleTypeRepository.findAll();
 	}
 
 	/**
-	 * Add the valid stations into base and remove invalid from passed driverOfferDto.
+	 * Get the all stations.
 	 *
-	 * @param driverOfferDto the driver offer dto
+	 * @return stations list of all currently supported stations
 	 */
-	private void addValidStationsIntoBase(DriverOfferDto driverOfferDto)
+	public List<Station> getAllStations()
 	{
-		// TODO: implement logic for adding stations into data base!!!!!!!!!!!!!
+		return stationRepository.findAll();
 	}
 
 	/**
-	 * Get the full filled DriverOfferDto.
+	 * Get the all areas.
+	 *
+	 * @return areas list of all currently supported areas
+	 */
+	public List<Area> getAllAreas()
+	{
+		return areaRepository.findAll();
+	}
+
+	/**
+	 * Add the valid stations into base and remove invalid from passed driverOffer.
 	 *
 	 * @param driverOffer the driver offer
-	 * @return the full filled DriverOfferDto
 	 */
-	private DriverOfferDto getFullFilledDriverOfferDto(DriverOffer driverOffer)
+	private void addValidStationsIntoBase(DriverOffer driverOffer)
 	{
-		DriverOfferDto driverOfferDto = new DriverOfferDto(driverOffer);
-
-		// Set offerStatus.
-		OfferStatusDto offerStatusDto = new OfferStatusDto(
-				offersStatusRepository.findOne(driverOffer.getOfferStatusId()));
-		driverOfferDto.setOfferStatus(offerStatusDto);
-
-		// Set userVehicle.
-		UserVehicle userVehicle = userVehicleRepository.findOne(driverOffer.getUserVehicleId());
-		Vehicle vehicle = vehicleRepository.findOne(userVehicle.getVehicleId());
-		VehicleDto vehicleDto = new VehicleDto(vehicle);
-		vehicleDto.setVehicleType(
-				new VehicleTypeDto(vehicleTypeRepository.findOne(vehicle.getVehicleTypeId())));
-		User user = userRepository.findOne(userVehicle.getUserId());
-		UserVehicleDto userVehicleDto = new UserVehicleDto(userVehicle.getId(),
-				userService.getFullFilledUserDto(user), vehicleDto);
-		driverOfferDto.setUserVehicle(userVehicleDto);
-
-		// TODO: add stations!!!
-
-		// Set claimerOffers.
-		List<ClaimerOffer> claimerOffers = claimerOfferRepository
-				.findByDriverOfferId(driverOffer.getId());
-		for (ClaimerOffer claimerOffer : claimerOffers)
-		{
-			ClaimerOfferDto claimerOfferDto = new ClaimerOfferDto(claimerOffer);
-			claimerOfferDto.setDriverOffer(driverOfferDto);
-			claimerOfferDto.setOfferStatus(new OfferStatusDto(
-					offersStatusRepository.findOne(claimerOffer.getOfferStatusId())));
-			claimerOfferDto.setUser(new UserDto(userRepository.findOne(claimerOffer.getUserId())));
-
-			driverOfferDto.getClaimerOffers().add(claimerOfferDto);
-		}
-
-		return driverOfferDto;
+		// TODO: implement logic for adding stations into data base!!!!!!!!!!!!!
 	}
 }

@@ -17,12 +17,10 @@ public class App
 	{
 		SpringApplication.run(App.class, args);
 	}
-	
+
 	@Bean
-    CommandLineRunner init(StorageService storageService) {
-        return (args) -> {
-//            storageService.deleteAll();
-            storageService.init();
-        };
-    }
+	CommandLineRunner init(StorageService storageService)
+	{
+		return args -> storageService.init();
+	}
 }

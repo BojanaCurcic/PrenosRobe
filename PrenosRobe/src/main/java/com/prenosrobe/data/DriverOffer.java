@@ -1,20 +1,28 @@
+/*
+ * 
+ */
 package com.prenosrobe.data;
 
 import java.io.Serializable;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
-
-import com.prenosrobe.dto.DriverOfferDto;
 
 @Entity
 @Table(name = "driver_offer")
@@ -44,13 +52,22 @@ public class DriverOffer implements Serializable
 	@Column(name = "time")
 	private Time time;
 
+	@Valid
 	@NotNull
-	@Column(name = "offer_status_id")
-	private Integer offerStatusId = null;
+	@ManyToOne
+	@JoinColumn(name = "offer_status_id", referencedColumnName = "offer_status_id")
+	private OfferStatus offerStatus;
 
+	@Valid
 	@NotNull
-	@Column(name = "user_vehicle_id")
-	private Integer userVehicleId = null;
+	@ManyToOne
+	@JoinColumn(name = "user_vehicle_id", referencedColumnName = "user_vehicle_id")
+	private UserVehicle userVehicle;
+
+	@Valid
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "driver_offer_id")
+	private List<DriverOfferStation> driverOfferStations = new ArrayList<>();
 
 	/**
 	 * Instantiate a new DriverOffer.
@@ -60,63 +77,18 @@ public class DriverOffer implements Serializable
 	}
 
 	/**
-	 * Instantiate a new driver offer.
+	 * Instantiate a new driver offer according to the forwarded driver offer.
 	 *
-	 * @param departureLocation departure location
-	 * @param arrivalLocation arrival location
-	 * @param date date
-	 * @param offerStatusId offer status id
-	 * @param userVehicleId user vehicle id
+	 * @param driverOffer driver offer
 	 */
-	public DriverOffer(final String departureLocation, final String arrivalLocation,
-			final Date date, final Integer offerStatusId, final Integer userVehicleId)
+	public DriverOffer(final DriverOffer driverOffer)
 	{
-		this.departureLocation = departureLocation;
-		this.arrivalLocation = arrivalLocation;
-		this.date = date;
-		this.offerStatusId = offerStatusId;
-		this.userVehicleId = userVehicleId;
-	}
-
-	/**
-	 * Instantiate a new driver offer.
-	 *
-	 * @param departureLocation departure location
-	 * @param arrivalLocation arrival location
-	 * @param date date
-	 * @param time time
-	 * @param offerStatusId offer status id
-	 * @param userVehicleId user vehicle id
-	 */
-	public DriverOffer(final String departureLocation, final String arrivalLocation,
-			final Date date, final Time time, final Integer offerStatusId,
-			final Integer userVehicleId)
-	{
-		this.departureLocation = departureLocation;
-		this.arrivalLocation = arrivalLocation;
-		this.date = date;
-		this.time = time;
-		this.offerStatusId = offerStatusId;
-		this.userVehicleId = userVehicleId;
-	}
-
-	/**
-	 * Instantiate a new driver offer.
-	 *
-	 * @param driverOfferDto driver offer dto
-	 */
-	public DriverOffer(DriverOfferDto driverOfferDto)
-	{
-		this.departureLocation = driverOfferDto.getDepartureLocation();
-		this.arrivalLocation = driverOfferDto.getArrivalLocation();
-		this.date = driverOfferDto.getDate();
-		this.time = driverOfferDto.getTime();
-		if (driverOfferDto.getOfferStatus() != null
-				&& driverOfferDto.getOfferStatus().getId() != null)
-			this.offerStatusId = driverOfferDto.getOfferStatus().getId();
-		if (driverOfferDto.getUserVehicle() != null
-				&& driverOfferDto.getUserVehicle().getId() != null)
-			this.userVehicleId = driverOfferDto.getUserVehicle().getId();
+		this.departureLocation = driverOffer.getDepartureLocation();
+		this.arrivalLocation = driverOffer.getArrivalLocation();
+		this.date = driverOffer.getDate();
+		this.time = driverOffer.getTime();
+		this.offerStatus = driverOffer.getOfferStatus();
+		this.userVehicle = driverOffer.getUserVehicle();
 	}
 
 	/**
@@ -240,42 +212,62 @@ public class DriverOffer implements Serializable
 	}
 
 	/**
-	 * Get the offer status id.
+	 * Get the offer status.
 	 *
-	 * @return offer status id
+	 * @return offer status 
 	 */
-	public Integer getOfferStatusId()
+	public OfferStatus getOfferStatus()
 	{
-		return offerStatusId;
+		return offerStatus;
 	}
 
 	/**
-	 * Set the offer status id.
+	 * Set the offer status.
 	 *
-	 * @param offerStatusId new offer status id
+	 * @param offerStatus new offer status 
 	 */
-	public void setOfferStatusId(Integer offerStatusId)
+	public void setOfferStatus(OfferStatus offerStatus)
 	{
-		this.offerStatusId = offerStatusId;
+		this.offerStatus = offerStatus;
 	}
 
 	/**
-	 * Get the user vehicle id.
+	 * Get the user vehicle.
 	 *
-	 * @return user vehicle id
+	 * @return user vehicle
 	 */
-	public Integer getUserVehicleId()
+	public UserVehicle getUserVehicle()
 	{
-		return userVehicleId;
+		return userVehicle;
 	}
 
 	/**
-	 * Set the user vehicle id.
+	 * Set the user vehicle.
 	 *
-	 * @param userVehicleId new user vehicle id
+	 * @param userVehicle new user vehicle
 	 */
-	public void setUserVehicleId(final Integer userVehicleId)
+	public void setUserVehicle(final UserVehicle userVehicle)
 	{
-		this.userVehicleId = userVehicleId;
+		this.userVehicle = userVehicle;
+	}
+
+	/**
+	 * Get the driver offer stations.
+	 *
+	 * @return driver offer stations
+	 */
+	public List<DriverOfferStation> getDriverOfferStations()
+	{
+		return driverOfferStations;
+	}
+
+	/**
+	 * Set the driver offer stations.
+	 *
+	 * @param driverOfferStations new driver offer stations
+	 */
+	public void setDriverOfferStations(final List<DriverOfferStation> driverOfferStations)
+	{
+		this.driverOfferStations = driverOfferStations;
 	}
 }

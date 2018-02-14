@@ -1,19 +1,23 @@
 package com.prenosrobe.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.Valid;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
-
-import com.prenosrobe.dto.UserDto;
 
 @Entity
 @Table(name = "user")
@@ -60,7 +64,17 @@ public class User implements Serializable
 	private String token;
 
 	@Column(name = "active")
-	private boolean active = true;
+	private Boolean active;
+
+	@Valid
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "user_id")
+	private List<Impression> impressions = new ArrayList<>();
+
+	@Valid
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "user_id")
+	private List<UserLanguage> userLanguages = new ArrayList<>();
 
 	/**
 	 * Instantiate a new User.
@@ -70,70 +84,20 @@ public class User implements Serializable
 	}
 
 	/**
-	 * Instantiate a new User.
+	 * Instantiate a new user according to the forwarded user.
 	 *
-	 * @param name name
-	 * @param surname surname
-	 * @param username username
-	 * @param password password
-	 * @param email email
-	 * @param phoneNumber phone number
-	 * @param token token
+	 * @param user user
 	 */
-	public User(final String name, final String surname, final String username,
-			final String password, final String email, final String phoneNumber, final String token)
+	public User(final User user)
 	{
-		this.name = name;
-		this.surname = surname;
-		this.username = username;
-		this.password = password;
-		this.email = email;
-		this.phoneNumber = phoneNumber;
-		this.token = token;
-	}
-
-	/**
-	 * Instantiate a new User.
-	 *
-	 * @param name name
-	 * @param surname surname
-	 * @param username username
-	 * @param password password
-	 * @param email email
-	 * @param phoneNumber phone number
-	 * @param photo photo
-	 * @param token token
-	 */
-	public User(final String name, final String surname, final String username,
-			final String password, final String email, final String phoneNumber, final String photo,
-			final String token)
-	{
-		this.name = name;
-		this.surname = surname;
-		this.username = username;
-		this.password = password;
-		this.email = email;
-		this.phoneNumber = phoneNumber;
-		this.photo = photo;
-		this.token = token;
-	}
-
-	/**
-	 * Instantiate a new user.
-	 *
-	 * @param userDto user dto
-	 */
-	public User(final UserDto userDto)
-	{
-		this.name = userDto.getName();
-		this.surname = userDto.getSurname();
-		this.username = userDto.getUsername();
-		this.password = userDto.getPassword();
-		this.email = userDto.getEmail();
-		this.phoneNumber = userDto.getPhoneNumber();
-		this.photo = userDto.getPhoto();
-		this.token = userDto.getToken();
-		this.active = userDto.isActive();
+		this.name = user.getName();
+		this.surname = user.getSurname();
+		this.username = user.getUsername();
+		this.password = user.getPassword();
+		this.email = user.getEmail();
+		this.phoneNumber = user.getPhoneNumber();
+		this.photo = user.getPhoto();
+		this.token = user.getToken();
 	}
 
 	/**
@@ -321,7 +285,7 @@ public class User implements Serializable
 	 *
 	 * @return true, if is active
 	 */
-	public boolean isActive()
+	public Boolean isActive()
 	{
 		return active;
 	}
@@ -331,7 +295,7 @@ public class User implements Serializable
 	 *
 	 * @param active new active
 	 */
-	public void setActive(final boolean active)
+	public void setActive(final Boolean active)
 	{
 		this.active = active;
 	}
@@ -354,5 +318,45 @@ public class User implements Serializable
 	public void setCreatedAt(final Date createdAt)
 	{
 		this.createdAt = createdAt;
+	}
+
+	/**
+	 * Get the impressions.
+	 *
+	 * @return impressions
+	 */
+	public List<Impression> getImpressions()
+	{
+		return impressions;
+	}
+
+	/**
+	 * Set the impressions.
+	 *
+	 * @param impressions new impressions
+	 */
+	public void setImpressions(final List<Impression> impressions)
+	{
+		this.impressions = impressions;
+	}
+
+	/**
+	 * Get the user languages.
+	 *
+	 * @return user languages
+	 */
+	public List<UserLanguage> getUserLanguages()
+	{
+		return userLanguages;
+	}
+
+	/**
+	 * Set the user languages.
+	 *
+	 * @param userLanguages new user languages
+	 */
+	public void setUserLanguages(final List<UserLanguage> userLanguages)
+	{
+		this.userLanguages = userLanguages;
 	}
 }

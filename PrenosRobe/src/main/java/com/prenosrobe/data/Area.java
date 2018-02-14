@@ -1,9 +1,7 @@
 package com.prenosrobe.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -31,9 +28,6 @@ public class Area implements Serializable
 	@NotEmpty
 	@Column(name = "name")
 	private String name;
-
-	@Transient
-	private List<Station> stations = new ArrayList<>();
 
 	/**
 	 * Instantiate a new Area.
@@ -110,45 +104,5 @@ public class Area implements Serializable
 	public void setName(final String name)
 	{
 		this.name = name;
-	}
-
-	/**
-	 * Get the stations.
-	 *
-	 * @return stations
-	 */
-	public List<Station> getStations()
-	{
-		return stations;
-	}
-
-	/**
-	 * Set the stations.
-	 *
-	 * @param stations new stations
-	 */
-	public void setStations(final List<Station> stations)
-	{
-		this.stations = stations;
-	}
-
-	/**
-	 * Add the new station.
-	 *
-	 * @param station new station
-	 */
-	public void addStation(final Station station)
-	{
-		this.stations.add(station);
-	}
-
-	/**
-	 * Remove the station.
-	 *
-	 * @param station station
-	 */
-	public void removeStation(final Station station)
-	{
-		this.stations.remove(station);
 	}
 }

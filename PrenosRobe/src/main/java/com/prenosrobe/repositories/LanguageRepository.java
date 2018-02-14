@@ -9,4 +9,6 @@ import com.prenosrobe.data.Language;
 public interface LanguageRepository extends CrudRepository<Language, Integer>
 {
 	List<Language> findAll();
+	
+	Language findByName(String name);
 }

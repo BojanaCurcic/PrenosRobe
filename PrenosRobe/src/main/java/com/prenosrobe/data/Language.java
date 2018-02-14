@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 @Entity
 @Table(name = "language")
 @SuppressWarnings("serial")
@@ -23,6 +25,7 @@ public class Language implements Serializable
 	@Column(name = "created_at")
 	private Date createdAt = new Date();
 
+	@NotEmpty
 	@Column(name = "name")
 	private String name;
 
@@ -31,16 +34,6 @@ public class Language implements Serializable
 	 */
 	public Language()
 	{
-	}
-
-	/**
-	 * Instantiate a new Language.
-	 *
-	 * @param name name
-	 */
-	public Language(final String name)
-	{
-		this.name = name;
 	}
 
 	/**

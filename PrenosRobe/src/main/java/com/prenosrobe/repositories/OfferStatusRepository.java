@@ -9,4 +9,6 @@ import com.prenosrobe.data.OfferStatus;
 public interface OfferStatusRepository extends CrudRepository<OfferStatus, Integer>
 {
 	List<OfferStatus> findAll();
+
+	OfferStatus findByName(String name);
 }

@@ -7,15 +7,16 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.prenosrobe.dto.LanguageDto;
-import com.prenosrobe.dto.UserDto;
+import com.prenosrobe.data.Impression;
+import com.prenosrobe.data.Language;
+import com.prenosrobe.data.User;
 import com.prenosrobe.service.UserService;
 
 @RestController
@@ -25,33 +26,34 @@ public class UserController
 	private UserService userService;
 
 	/**
-	 * Register the user. Parameter userDto should have set fields 'name', 'surname', 
-	 * 'username', 'password', 'email', 'photo', 'phoneNumber' and list of languages, 
-	 * where each language should have set field 'id'.
+	 * Register the user. Parameter user should have set fields 'name', 'surname', 
+	 * 'username', 'password', 'email', 'photo', 'phoneNumber' and list of userLanguages, 
+	 * where each userLanguage should have set fields 'userId' and 'language' and each language
+	 * should have set field 'name'.
 	 *
-	 * @param userDto user
-	 * @return userDto user with all its information
+	 * @param user user
+	 * @return user user with all its information
 	 */
-	@RequestMapping(value = "/user/register", method = RequestMethod.POST)
-	public ResponseEntity<?> add(@RequestBody UserDto userDto, HttpServletRequest request)
+	@PostMapping("/user/register")
+	public ResponseEntity<?> add(@RequestBody User user, HttpServletRequest request)
 	{
-		String errors = userService.register(userDto);
+		String errors = userService.register(user);
 		if (errors.isEmpty())
-			return new ResponseEntity<>(userDto, HttpStatus.CREATED);
+			return new ResponseEntity<>(user, HttpStatus.CREATED);
 
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
 
 	/**
-	 * Login the user. Parameter userDto should have set fields 'email' and 'password'.
+	 * Login the user. Parameter user should have set fields 'email' and 'password'.
 	 *
-	 * @param userDto user
-	 * @return userDto user with all its information
+	 * @param user user
+	 * @return user user with all its information
 	 */
-	@RequestMapping(value = "/user/login", method = RequestMethod.POST)
-	public ResponseEntity<?> login(@RequestBody UserDto userDto)
+	@PostMapping("/user/login")
+	public ResponseEntity<?> login(@RequestBody User user)
 	{
-		UserDto logdedInUser = userService.login(userDto);
+		User logdedInUser = userService.login(user);
 		if (logdedInUser != null)
 			return new ResponseEntity<>(logdedInUser, HttpStatus.OK);
 
@@ -63,7 +65,7 @@ public class UserController
 	 *
 	 * @param token token for user identification
 	 */
-	@RequestMapping(value = "/user/logout", method = RequestMethod.POST)
+	@PostMapping("/user/logout")
 	public ResponseEntity<String> logout(@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
@@ -81,19 +83,44 @@ public class UserController
 	 *
 	 * @param id user id
 	 * @param token token used for user identification
-	 * @return userDto user with all its information
+	 * @return user user with all its information
 	 */
-	@RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
+	@GetMapping("/user/{id}")
 	public ResponseEntity<?> getUserById(@PathVariable Long id,
 			@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
 		{
-			UserDto userDto = userService.getUserById(id.intValue());
-			if (userDto != null)
-				return new ResponseEntity<>(userDto, HttpStatus.OK);
+			User user = userService.getUserById(id.intValue());
+			if (user != null)
+				return new ResponseEntity<>(user, HttpStatus.OK);
 
 			return new ResponseEntity<>("Unknown user.", HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	}
+
+	/**
+	 * Add the impression. Parameter impression should have set fields 'userId',
+	 * 'deliveredOnTime', 'pickedOnTime', 'comment' and 'driver'. Field 'driver' defines if this impression is
+	 * related to a driver (when its values is true) or to a claimer (when its value is false). If field 
+	 * 'driver' is true, impression should also have set fields 'deliveredUndamaged' and 'delivered', otherwise
+	 * field 'correctlyPaid' should be set. All of these fields must have values between 1 and 10.  
+	 *
+	 * @param token token used for user identification
+	 * @param impression impression
+	 */
+	@PostMapping("impression")
+	public ResponseEntity<String> addImpression(@RequestHeader(value = "token") String token,
+			@RequestBody Impression impression)
+	{
+		if (userService.authentication(token))
+		{
+			String errors = userService.addImpression(impression);
+			if (errors.isEmpty())
+				return new ResponseEntity<>(HttpStatus.OK);
+
+			return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 	}
@@ -104,8 +131,8 @@ public class UserController
 	 * @param token token used for user identification
 	 * @return languages list of all supported languages
 	 */
-	@RequestMapping(value = "/languages", method = RequestMethod.GET)
-	public ResponseEntity<List<LanguageDto>> getAllLanguages(
+	@GetMapping("/languages")
+	public ResponseEntity<List<Language>> getAllLanguages(
 			@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))

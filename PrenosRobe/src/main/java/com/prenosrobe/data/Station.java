@@ -8,8 +8,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "station")
@@ -24,6 +29,7 @@ public class Station implements Serializable
 	@Column(name = "created_at")
 	private Date createdAt = new Date();
 
+	@NotEmpty
 	@Column(name = "name")
 	private String name;
 
@@ -33,11 +39,11 @@ public class Station implements Serializable
 	@Column(name = "y_coordinate")
 	private double yCoordinate;
 
-	@Transient
-	Area area;
-
-	@Column(name = "area_id")
-	private int areaId;
+	@Valid
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "area_id", referencedColumnName = "area_id")
+	private Area area;
 
 	/**
 	 * Instantiates a new Station.
@@ -173,30 +179,6 @@ public class Station implements Serializable
 	 */
 	public void setArea(final Area area)
 	{
-		if (area != null)
-		{
-			this.area = area;
-			this.areaId = area.getId();
-		}
-	}
-
-	/**
-	 * Get the area id.
-	 *
-	 * @return area id
-	 */
-	public int getAreaId()
-	{
-		return areaId;
-	}
-
-	/**
-	 * Set the area id.
-	 *
-	 * @param areaId new area id
-	 */
-	public void setAreaId(final int areaId)
-	{
-		this.areaId = areaId;
+		this.area = area;
 	}
 }

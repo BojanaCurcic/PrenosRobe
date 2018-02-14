@@ -8,7 +8,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "user_vehicle")
@@ -23,11 +27,17 @@ public class UserVehicle implements Serializable
 	@Column(name = "created_at")
 	private Date createdAt = new Date();
 
-	@Column(name = "user_id")
-	private Integer userId;
+	@Valid
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "user_id", referencedColumnName = "user_id")
+	private User user;
 
-	@Column(name = "vehicle_id")
-	private Integer vehicleId;
+	@Valid
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "vehicle_id", referencedColumnName = "vehicle_id")
+	private Vehicle vehicle;
 
 	/**
 	 * Instantiate a new UserVehicle.
@@ -39,13 +49,13 @@ public class UserVehicle implements Serializable
 	/**
 	 * Instantiate a new UserVehicle.
 	 *
-	 * @param userId user id
-	 * @param vehicleId vehicle id
+	 * @param user user
+	 * @param vehicle vehicle
 	 */
-	public UserVehicle(final Integer userId, final Integer vehicleId)
+	public UserVehicle(final User user, final Vehicle vehicle)
 	{
-		this.userId = userId;
-		this.vehicleId = vehicleId;
+		this.user = user;
+		this.vehicle = vehicle;
 	}
 
 	/**
@@ -89,42 +99,42 @@ public class UserVehicle implements Serializable
 	}
 
 	/**
-	 * Get the user id.
+	 * Get the user.
 	 *
-	 * @return user id
+	 * @return user
 	 */
-	public Integer getUserId()
+	public User getUser()
 	{
-		return userId;
+		return user;
 	}
 
 	/**
-	 * Set the user id.
+	 * Set the user.
 	 *
-	 * @param userId new user id
+	 * @param userId new user
 	 */
-	public void setUserId(final Integer userId)
+	public void setUser(final User user)
 	{
-		this.userId = userId;
+		this.user = user;
 	}
 
 	/**
-	 * Get the vehicle id.
+	 * Get the vehicle.
 	 *
-	 * @return vehicle id
+	 * @return vehicle
 	 */
-	public Integer getVehicleId()
+	public Vehicle getVehicle()
 	{
-		return vehicleId;
+		return vehicle;
 	}
 
 	/**
-	 * Set the vehicle id.
+	 * Set the vehicle.
 	 *
-	 * @param vehicleId new vehicle id
+	 * @param vehicleId new vehicle 
 	 */
-	public void setVehicleId(final Integer vehicleId)
+	public void setVehicle(final Vehicle vehicle)
 	{
-		this.vehicleId = vehicleId;
+		this.vehicle = vehicle;
 	}
 }
