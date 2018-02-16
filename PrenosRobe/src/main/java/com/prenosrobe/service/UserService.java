@@ -16,6 +16,8 @@ import com.prenosrobe.data.Impression;
 import com.prenosrobe.data.Language;
 import com.prenosrobe.data.User;
 import com.prenosrobe.data.UserLanguage;
+import com.prenosrobe.exception.DataNotSavedException;
+import com.prenosrobe.exception.Messages;
 import com.prenosrobe.repositories.ImpressionRepository;
 import com.prenosrobe.repositories.LanguageRepository;
 import com.prenosrobe.repositories.UserLanguageRepository;
@@ -56,13 +58,21 @@ public class UserService
 
 		if (errors.isEmpty())
 		{
+			// TODO: ocekuj da je password vec kriptovan (smisliti kako kriptovan)
 			user.setPassword(passwordEncoder.encode(user.getPassword()));
+			// TODO: promeni logiku za pravljenje tokena
 			user.setToken(passwordEncoder.encode(user.getUsername() + ":" + user.getPassword()));
 			user.setActive(true);
 
-			User savedUser = new User(user);
-			userRepository.save(savedUser);
-			user.setId(savedUser.getId());
+			try
+			{
+				User savedUser = new User(user);
+				userRepository.save(savedUser);
+				user.setId(savedUser.getId());
+			} catch (Exception e)
+			{
+				throw new DataNotSavedException(e.getMessage(), e);
+			}
 
 			addValidUserLanguagesIntoBase(user);
 		}
@@ -78,13 +88,21 @@ public class UserService
 	public User login(final User user)
 	{
 		User foundUser = userRepository.findByEmail(user.getEmail());
+		// TODO: ocekuj da je password vec kriptovan (smisliti kako kriptovan)
 		if (foundUser != null
 				&& passwordEncoder.matches(user.getPassword(), foundUser.getPassword()))
 		{
-			foundUser.setActive(true);
-			userRepository.save(foundUser);
+			try
+			{
+				// TODO: promeni token svaki put kad se loguje
+				foundUser.setActive(true);
+				userRepository.save(foundUser);
 
-			return foundUser;
+				return foundUser;
+			} catch (Exception e)
+			{
+				throw new DataNotSavedException(e.getMessage(), e);
+			}
 		}
 		return null;
 	}
@@ -100,8 +118,15 @@ public class UserService
 		if (foundUser != null)
 		{
 			foundUser.setActive(false);
-			userRepository.save(foundUser);
-			return true;
+			try
+			{
+				userRepository.save(foundUser);
+
+				return true;
+			} catch (Exception e)
+			{
+				throw new DataNotSavedException(e.getMessage(), e);
+			}
 		}
 		return false;
 	}
@@ -134,11 +159,44 @@ public class UserService
 				"\"" + constrain.getPropertyPath() + "\" " + constrain.getMessage() + ". "));
 
 		if (userRepository.findByEmail(user.getEmail()) != null)
-			errors.append("\"email\" is already used. ");
+			errors.append(Messages.EMAIL_USED);
 		if (userRepository.findByUsername(user.getUsername()) != null)
-			errors.append("\"username\" is already used. ");
+			errors.append(Messages.USERNAME_USED);
 		if (userRepository.findByPhoneNumber(user.getPhoneNumber()) != null)
-			errors.append("\"phone number\" is already used. ");
+			errors.append(Messages.PHONE_NUMBER_USED);
+
+		return errors.toString();
+	}
+
+	/**
+	 * Validate updated user.
+	 *
+	 * @param updatedUser the updated user
+	 * @return errors
+	 */
+	private String validateUpdatedUser(final User updatedUser)
+	{
+		StringBuilder errors = new StringBuilder();
+
+		Set<ConstraintViolation<User>> constraintViolations = validator.validate(updatedUser);
+		constraintViolations.iterator().forEachRemaining(constrain -> errors.append(
+				"\"" + constrain.getPropertyPath() + "\" " + constrain.getMessage() + ". "));
+
+		if (errors.toString().isEmpty())
+		{
+			User foundUser = userRepository.findOne(updatedUser.getId());
+
+			if (foundUser != null && !foundUser.getEmail().equals(updatedUser.getEmail())
+					&& userRepository.findByEmail(updatedUser.getEmail()) != null)
+				errors.append(Messages.EMAIL_USED);
+			if (foundUser != null && !foundUser.getUsername().equals(updatedUser.getUsername())
+					&& userRepository.findByUsername(updatedUser.getUsername()) != null)
+				errors.append(Messages.USERNAME_USED);
+			if (foundUser != null
+					&& !foundUser.getPhoneNumber().equals(updatedUser.getPhoneNumber())
+					&& userRepository.findByPhoneNumber(updatedUser.getPhoneNumber()) != null)
+				errors.append(Messages.PHONE_NUMBER_USED);
+		}
 
 		return errors.toString();
 	}
@@ -152,6 +210,31 @@ public class UserService
 	public User getUserById(final int id)
 	{
 		return userRepository.findOne(id);
+	}
+
+	/**
+	 * Update user. Parameter user should have set all fields, including 'id'.
+	 * 
+	 * @param updatedUser updated user
+	 * @return errors
+	 */
+	public String updateUser(User updatedUser)
+	{
+		String errors = validateUpdatedUser(updatedUser);
+		if (errors.isEmpty())
+		{
+			try
+			{
+				User user = new User(updatedUser);
+				user.setId(updatedUser.getId());
+
+				userRepository.save(user);
+			} catch (Exception e)
+			{
+				throw new DataNotSavedException(e.getMessage(), e);
+			}
+		}
+		return errors;
 	}
 
 	/**
@@ -169,8 +252,15 @@ public class UserService
 		String errors = validateImpression(impression);
 
 		if (errors.isEmpty())
-			impressionRepository.save(impression);
-
+		{
+			try
+			{
+				impressionRepository.save(impression);
+			} catch (Exception e)
+			{
+				throw new DataNotSavedException(e.getMessage(), e);
+			}
+		}
 		return errors;
 	}
 
@@ -191,15 +281,15 @@ public class UserService
 		if (impression.isDriver() != null && impression.isDriver())
 		{
 			if (impression.getDelivered() == null)
-				errors.append("\"delivered\" may not be null. ");
+				errors.append(Messages.DELIVERED_IS_NULL);
 			if (impression.getDeliveredUndamaged() == null)
-				errors.append("\"deliveredUndamaged\" may not be null. ");
+				errors.append(Messages.DELIVERED_UNDAMAGED_IS_NULL);
 		}
 		else if (impression.isDriver() != null && !impression.isDriver()
 				&& impression.getCorrectlyPaid() == null)
-			errors.append("\"correctlyPaid\" may not be null. ");
+			errors.append(Messages.CORRECTLY_PAID_IS_NULL);
 		if (userRepository.findOne(impression.getUserId()) == null)
-			errors.append("Unknown user. ");
+			errors.append(Messages.UNKNOWN_USER);
 
 		return errors.toString();
 	}
@@ -232,9 +322,15 @@ public class UserService
 			Language foundLanguage = languageRepository.findByName(language.getName());
 			if (foundLanguage != null)
 			{
-				userLanguage.setLanguage(foundLanguage);
-				UserLanguage validUserLanguage = userLanguageRepository.save(userLanguage);
-				validUserLanguages.add(validUserLanguage);
+				try
+				{
+					userLanguage.setLanguage(foundLanguage);
+					UserLanguage validUserLanguage = userLanguageRepository.save(userLanguage);
+					validUserLanguages.add(validUserLanguage);
+				} catch (Exception e)
+				{
+					throw new DataNotSavedException(e.getMessage(), e);
+				}
 			}
 		}
 

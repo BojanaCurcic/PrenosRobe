@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.prenosrobe.data.Impression;
 import com.prenosrobe.data.Language;
 import com.prenosrobe.data.User;
+import com.prenosrobe.exception.DataNotSavedException;
+import com.prenosrobe.exception.Messages;
 import com.prenosrobe.service.UserService;
 
 @RestController
@@ -57,7 +60,7 @@ public class UserController
 		if (logdedInUser != null)
 			return new ResponseEntity<>(logdedInUser, HttpStatus.OK);
 
-		return new ResponseEntity<>("Unknown user.", HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(Messages.UNKNOWN_USER, HttpStatus.BAD_REQUEST);
 	}
 
 	/**
@@ -95,7 +98,29 @@ public class UserController
 			if (user != null)
 				return new ResponseEntity<>(user, HttpStatus.OK);
 
-			return new ResponseEntity<>("Unknown user.", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(Messages.UNKNOWN_USER, HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	}
+
+	/**
+	 * Update user.
+	 * 
+	 * @param token token used for user identification
+	 * @param user the user
+	 * @return updatedUser updated user
+	 */
+	@PostMapping("/user/update")
+	public ResponseEntity<?> updateUser(@RequestHeader(value = "token") String token,
+			@RequestBody User user)
+	{
+		if (userService.authentication(token))
+		{
+			String errors = userService.updateUser(user);
+			if (errors.isEmpty())
+				return new ResponseEntity<>(user, HttpStatus.OK);
+
+			return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 	}
@@ -139,5 +164,16 @@ public class UserController
 			return new ResponseEntity<>(userService.getAllLanguages(), HttpStatus.OK);
 
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	}
+
+	/**
+	 * Handle data not saved.
+	 *
+	 * @param exc exception
+	 */
+	@ExceptionHandler(DataNotSavedException.class)
+	public ResponseEntity<String> handleDataNotSaved(DataNotSavedException exc)
+	{
+		return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 }

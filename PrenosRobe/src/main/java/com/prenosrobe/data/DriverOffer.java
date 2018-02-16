@@ -34,9 +34,6 @@ public class DriverOffer implements Serializable
 	@Column(name = "driver_offer_id")
 	private Integer id;
 
-	@Column(name = "created_at")
-	private Date createdAt = new Date();
-
 	@NotEmpty
 	@Column(name = "departure_location")
 	private String departureLocation;
@@ -189,26 +186,6 @@ public class DriverOffer implements Serializable
 	public void setTime(final Time time)
 	{
 		this.time = time;
-	}
-
-	/**
-	 * Get the created at.
-	 *
-	 * @return created at
-	 */
-	public Date getCreatedAt()
-	{
-		return createdAt;
-	}
-
-	/**
-	 * Set the created at.
-	 *
-	 * @param createdAt new created at
-	 */
-	public void setCreatedAt(final Date createdAt)
-	{
-		this.createdAt = createdAt;
 	}
 
 	/**

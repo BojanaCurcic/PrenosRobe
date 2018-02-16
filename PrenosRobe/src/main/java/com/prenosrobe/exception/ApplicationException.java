@@ -1,6 +1,6 @@
-package com.prenosrobe.storage.exception;
+package com.prenosrobe.exception;
 
-public class StorageException extends RuntimeException
+public class ApplicationException extends RuntimeException
 {
 	private static final long serialVersionUID = -2099235223906477508L;
 
@@ -9,7 +9,7 @@ public class StorageException extends RuntimeException
 	 *
 	 * @param message message
 	 */
-	public StorageException(final String message)
+	public ApplicationException(final String message)
 	{
 		super(message);
 	}
@@ -20,7 +20,7 @@ public class StorageException extends RuntimeException
 	 * @param message message
 	 * @param cause cause
 	 */
-	public StorageException(final String message, final Throwable cause)
+	public ApplicationException(final String message, final Throwable cause)
 	{
 		super(message, cause);
 	}

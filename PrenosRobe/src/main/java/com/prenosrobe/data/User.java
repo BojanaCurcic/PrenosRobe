@@ -60,6 +60,7 @@ public class User implements Serializable
 	@Column(name = "photo")
 	private String photo;
 
+	// TODO: preimenuj token u neko smislenije ime
 	@Column(name = "token")
 	private String token;
 
@@ -90,6 +91,7 @@ public class User implements Serializable
 	 */
 	public User(final User user)
 	{
+		this.active = user.isActive();
 		this.name = user.getName();
 		this.surname = user.getSurname();
 		this.username = user.getUsername();

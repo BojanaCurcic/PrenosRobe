@@ -15,13 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.prenosrobe.storage.exception.StorageException;
-import com.prenosrobe.storage.exception.StorageFileNotFoundException;
+import com.prenosrobe.exception.ApplicationException;
+import com.prenosrobe.exception.Messages;
+import com.prenosrobe.exception.StorageFileNotFoundException;
 
 @Service
 public class FileSystemStorageService implements StorageService
 {
-
 	private final Path rootLocation;
 
 	@Autowired
@@ -30,31 +30,36 @@ public class FileSystemStorageService implements StorageService
 		this.rootLocation = Paths.get(properties.getLocation());
 	}
 
+	/**
+	 * Upload the file.
+	 *
+	 * @param file file
+	 */
 	@Override
-	public void store(MultipartFile file)
+	public void upload(MultipartFile file)
 	{
 		String filename = StringUtils.cleanPath(file.getOriginalFilename());
 		try
 		{
 			if (file.isEmpty())
 			{
-				throw new StorageException("Failed to store empty file " + filename);
+				throw new ApplicationException(Messages.STORE_EMPTY_FILE + filename);
 			}
 			if (filename.contains(".."))
 			{
-				// This is a security check
-				throw new StorageException(
-						"Cannot store file with relative path outside current directory "
-								+ filename);
+				throw new ApplicationException(Messages.STORE_FILE_WITH_RELATIVE_PATH + filename);
 			}
 			Files.copy(file.getInputStream(), this.rootLocation.resolve(filename),
 					StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e)
 		{
-			throw new StorageException("Failed to store file " + filename, e);
+			throw new ApplicationException(Messages.STORE_FILE + filename, e);
 		}
 	}
 
+	/**
+	 * Load all stored files from root location.
+	 */
 	@Override
 	public Stream<Path> loadAll()
 	{
@@ -64,17 +69,28 @@ public class FileSystemStorageService implements StorageService
 					.map(path -> this.rootLocation.relativize(path));
 		} catch (IOException e)
 		{
-			throw new StorageException("Failed to read stored files", e);
+			throw new ApplicationException(Messages.READ_STORED_FILES, e);
 		}
-
 	}
 
+	/**
+	 * Load the stored file path.
+	 * 
+	 * @param filename filename
+	 * @return file path
+	 */
 	@Override
 	public Path load(String filename)
 	{
 		return rootLocation.resolve(filename);
 	}
 
+	/**
+	 * Load the stored file.
+	 * 
+	 * @param filename filename
+	 * @return stored file 
+	 */
 	@Override
 	public Resource loadAsResource(String filename)
 	{
@@ -88,14 +104,17 @@ public class FileSystemStorageService implements StorageService
 			}
 			else
 			{
-				throw new StorageFileNotFoundException("Could not read file: " + filename);
+				throw new StorageFileNotFoundException(Messages.READ_FILE + filename);
 			}
 		} catch (MalformedURLException e)
 		{
-			throw new StorageFileNotFoundException("Could not read file: " + filename, e);
+			throw new StorageFileNotFoundException(Messages.READ_FILE + filename, e);
 		}
 	}
 
+	/**
+	 * Init root location.
+	 */
 	@Override
 	public void init()
 	{
@@ -104,7 +123,7 @@ public class FileSystemStorageService implements StorageService
 			Files.createDirectories(rootLocation);
 		} catch (IOException e)
 		{
-			throw new StorageException("Could not initialize storage", e);
+			throw new ApplicationException(Messages.INIT_STORAGE, e);
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package com.prenosrobe.data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,9 +25,6 @@ public class ClaimerOffer implements Serializable
 	@Column(name = "claimer_offer_id")
 	private Integer id;
 
-	@Column(name = "created_at")
-	private Date createdAt = new Date();
-
 	@NotEmpty
 	@Column(name = "departure_location")
 	private String departureLocation;
@@ -50,10 +46,14 @@ public class ClaimerOffer implements Serializable
 	@JoinColumn(name = "user_id", referencedColumnName = "user_id")
 	private User user;
 
+	@Valid
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "driver_offer_id", referencedColumnName = "driver_offer_id")
 	private DriverOffer driverOffer;
 
+	@Valid
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "offer_status_id", referencedColumnName = "offer_status_id")
 	private OfferStatus offerStatus;
@@ -212,26 +212,6 @@ public class ClaimerOffer implements Serializable
 	}
 
 	/**
-	 * Get the created at.
-	 *
-	 * @return created at
-	 */
-	public Date getCreatedAt()
-	{
-		return createdAt;
-	}
-
-	/**
-	 * Set the created at.
-	 *
-	 * @param createdAt new created at
-	 */
-	public void setCreatedAt(final Date createdAt)
-	{
-		this.createdAt = createdAt;
-	}
-
-	/**
 	 * Get the user.
 	 *
 	 * @return user 
@@ -256,7 +236,7 @@ public class ClaimerOffer implements Serializable
 	 *
 	 * @return driver offer
 	 */
-	public DriverOffer getDriverOfferId()
+	public DriverOffer getDriverOffer()
 	{
 		return driverOffer;
 	}

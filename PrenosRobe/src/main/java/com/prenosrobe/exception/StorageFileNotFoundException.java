@@ -1,6 +1,6 @@
-package com.prenosrobe.storage.exception;
+package com.prenosrobe.exception;
 
-public class StorageFileNotFoundException extends StorageException
+public class StorageFileNotFoundException extends ApplicationException
 {
 	private static final long serialVersionUID = -7527185539634725504L;
 

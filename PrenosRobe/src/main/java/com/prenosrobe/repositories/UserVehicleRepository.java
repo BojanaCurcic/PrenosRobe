@@ -11,6 +11,6 @@ public interface UserVehicleRepository extends CrudRepository<UserVehicle, Integ
 {
 	List<UserVehicle> findByUserId(Integer userId);
 
-	@Query(value = "SELECT user_vehicle_id, user_id, created_at, vehicle_id FROM user_vehicle WHERE user_id = ? AND vehicle_id = ?;", nativeQuery = true)
+	@Query(value = "SELECT * FROM user_vehicle WHERE user_id = ? AND vehicle_id = ?;", nativeQuery = true)
 	UserVehicle findByUserIdAndVehicleId(Integer userId, Integer vehicleId);
 }

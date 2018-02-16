@@ -19,6 +19,8 @@ import com.prenosrobe.data.User;
 import com.prenosrobe.data.UserVehicle;
 import com.prenosrobe.data.Vehicle;
 import com.prenosrobe.data.VehicleType;
+import com.prenosrobe.exception.DataNotSavedException;
+import com.prenosrobe.exception.Messages;
 import com.prenosrobe.repositories.AreaRepository;
 import com.prenosrobe.repositories.DriverOfferRepository;
 import com.prenosrobe.repositories.OfferStatusRepository;
@@ -71,11 +73,17 @@ public class DriverOfferService
 
 		if (errors.isEmpty())
 		{
-			DriverOffer savedDriverOffer = new DriverOffer(driverOffer);
-			driverOfferRepository.save(savedDriverOffer);
-			driverOffer.setId(savedDriverOffer.getId());
+			try
+			{
+				DriverOffer savedDriverOffer = new DriverOffer(driverOffer);
+				driverOfferRepository.save(savedDriverOffer);
+				driverOffer.setId(savedDriverOffer.getId());
 
-			addValidStationsIntoBase(driverOffer);
+				addValidStationsIntoBase(driverOffer);
+			} catch (Exception e)
+			{
+				throw new DataNotSavedException(e.getMessage(), e);
+			}
 		}
 		return errors;
 	}
@@ -115,35 +123,27 @@ public class DriverOfferService
 
 	/**
 	 * Update driver offer.
-	 * 
-	 * @param driverOffer the driver offer
-	 */
-	public boolean updateDriverOffer(DriverOffer driverOffer)
-	{
-		// TODO: imprelent logic for updating driver offer
-		return true;
-	}
-
-	/**
-	 * Update driver offer status.
 	 *
-	 * @param driverOffer driver offer
-	 * @param offerStatusName offer status name
+	 * @param updatedDriverOffer updated driver offer
 	 * @return errors
 	 */
-	public String updateDriverOfferStatus(DriverOffer driverOffer, final String offerStatus)
+	public String updateDriverOffer(DriverOffer updatedDriverOffer)
 	{
 		StringBuilder errors = new StringBuilder();
-		errors.append(validateDriverOffer(driverOffer));
+		errors.append(validateDriverOffer(updatedDriverOffer));
 
-		OfferStatus foundOfferStatus = offersStatusRepository.findByName(offerStatus);
-		if (errors.toString().isEmpty() && foundOfferStatus != null)
+		if (errors.toString().isEmpty())
 		{
-			driverOffer.setOfferStatus(foundOfferStatus);
-			driverOfferRepository.save(driverOffer);
+			try
+			{
+				DriverOffer driverOffer = new DriverOffer(updatedDriverOffer);
+				driverOffer.setId(updatedDriverOffer.getId());
+				driverOfferRepository.save(driverOffer);
+			} catch (Exception e)
+			{
+				throw new DataNotSavedException(e.getMessage(), e);
+			}
 		}
-		else
-			errors.append("Unknown offer status. ");
 
 		return errors.toString();
 	}
@@ -179,7 +179,7 @@ public class DriverOfferService
 			OfferStatus foundOfferStatus = offersStatusRepository
 					.findByName(driverOffer.getOfferStatus().getName());
 			if (foundOfferStatus == null)
-				errors.append("\"offerStatus\" is unknown. ");
+				errors.append(Messages.UNKNOWN_OFFER_STATUS);
 			else
 				driverOffer.setOfferStatus(foundOfferStatus);
 
@@ -198,8 +198,14 @@ public class DriverOfferService
 						.findByUserIdAndVehicleId(foundUser.getId(), foundVehicle.getId());
 				if (foundUserVehicle == null)
 				{
-					foundUserVehicle = new UserVehicle(foundUser, foundVehicle);
-					userVehicleRepository.save(foundUserVehicle);
+					try
+					{
+						foundUserVehicle = new UserVehicle(foundUser, foundVehicle);
+						userVehicleRepository.save(foundUserVehicle);
+					} catch (Exception e)
+					{
+						throw new DataNotSavedException(e.getMessage(), e);
+					}
 				}
 				driverOffer.setUserVehicle(foundUserVehicle);
 			}
@@ -219,7 +225,7 @@ public class DriverOfferService
 	{
 		User foundUser = userRepository.findByEmail(email);
 		if (foundUser == null)
-			errors.append("\"userVehicle.user\" is unknown. ");
+			errors.append(Messages.UNKNOWN_USER_VEHICLE_USER);
 
 		return foundUser;
 	}
@@ -240,11 +246,17 @@ public class DriverOfferService
 		{
 			VehicleType foundVehicleType = vehicleTypeRepository.findByName(vehicleTypeName);
 			if (foundVehicleType == null)
-				errors.append("\"userVehicle.vehicle.vehicleType\" is unknown. ");
+				errors.append(Messages.UNKNOWN_USER_VEHICLE_VEHICLE_VEHICLE_TYPE);
 			else
 			{
-				foundVehicle = new Vehicle(registrationNumber, foundVehicleType);
-				vehicleRepository.save(foundVehicle);
+				try
+				{
+					foundVehicle = new Vehicle(registrationNumber, foundVehicleType);
+					vehicleRepository.save(foundVehicle);
+				} catch (Exception e)
+				{
+					throw new DataNotSavedException(e.getMessage(), e);
+				}
 			}
 		}
 
@@ -278,8 +290,16 @@ public class DriverOfferService
 			foundUserVehicle = userVehicleRepository.findByUserIdAndVehicleId(foundUser.getId(),
 					foundVehicle.getId());
 			if (foundUserVehicle == null)
-				foundUserVehicle = userVehicleRepository
-						.save(new UserVehicle(foundUser, foundVehicle));
+			{
+				try
+				{
+					foundUserVehicle = userVehicleRepository
+							.save(new UserVehicle(foundUser, foundVehicle));
+				} catch (Exception e)
+				{
+					throw new DataNotSavedException(e.getMessage(), e);
+				}
+			}
 		}
 
 		return foundUserVehicle;
@@ -322,6 +342,6 @@ public class DriverOfferService
 	 */
 	private void addValidStationsIntoBase(DriverOffer driverOffer)
 	{
-		// TODO: implement logic for adding stations into data base!!!!!!!!!!!!!
+		// TODO: implementirati logiku za dodavanje stanica u bazu!!!!!!!!!!!!!
 	}
 }

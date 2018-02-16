@@ -1,7 +1,6 @@
 package com.prenosrobe.data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,9 +22,6 @@ public class DriverOfferStation implements Serializable
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "driver_offer_station_id")
 	private Integer id;
-
-	@Column(name = "created_at")
-	private Date createdAt = new Date();
 
 	@NotNull
 	@Column(name = "driver_offer_id")
@@ -84,26 +80,6 @@ public class DriverOfferStation implements Serializable
 	public void setId(final Integer id)
 	{
 		this.id = id;
-	}
-
-	/**
-	 * Get the created at.
-	 *
-	 * @return created at
-	 */
-	public Date getCreatedAt()
-	{
-		return createdAt;
-	}
-
-	/**
-	 * Set the created at.
-	 *
-	 * @param createdAt new created at
-	 */
-	public void setCreatedAt(final Date createdAt)
-	{
-		this.createdAt = createdAt;
 	}
 
 	/**

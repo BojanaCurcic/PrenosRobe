@@ -1,7 +1,6 @@
 package com.prenosrobe.data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,9 +20,6 @@ public class Language implements Serializable
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "language_id")
 	private Integer id;
-
-	@Column(name = "created_at")
-	private Date createdAt = new Date();
 
 	@NotEmpty
 	@Column(name = "name")
@@ -54,26 +50,6 @@ public class Language implements Serializable
 	public void setId(final Integer id)
 	{
 		this.id = id;
-	}
-
-	/**
-	 * Get the created at.
-	 *
-	 * @return created at
-	 */
-	public Date getCreatedAt()
-	{
-		return createdAt;
-	}
-
-	/**
-	 * Set the created at.
-	 *
-	 * @param createdAt new created at
-	 */
-	public void setCreatedAt(final Date createdAt)
-	{
-		this.createdAt = createdAt;
 	}
 
 	/**

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,12 +19,16 @@ import com.prenosrobe.data.OfferStatus;
 import com.prenosrobe.data.Station;
 import com.prenosrobe.data.UserVehicle;
 import com.prenosrobe.data.VehicleType;
+import com.prenosrobe.exception.DataNotSavedException;
+import com.prenosrobe.exception.Messages;
 import com.prenosrobe.service.DriverOfferService;
 import com.prenosrobe.service.UserService;
 
 @RestController
 public class DriverOfferController
 {
+	private static final String UNKNOWN_DRIVER_OFFER = "Unknown driver offer. ";
+
 	@Autowired
 	private DriverOfferService driverOfferService;
 
@@ -71,7 +76,7 @@ public class DriverOfferController
 			if (driverOffer != null)
 				return new ResponseEntity<>(driverOffer, HttpStatus.OK);
 
-			return new ResponseEntity<>("Unknown driver offer. ", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(UNKNOWN_DRIVER_OFFER, HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 	}
@@ -98,7 +103,7 @@ public class DriverOfferController
 	 * 
 	 * @param token token used for user identification
 	 * @param driverOffer the driver offer
-	 * @return the response entity
+	 * @return updatedDriverOffer updated driver offer
 	 */
 	@PostMapping("/driverOffer/update")
 	public ResponseEntity<?> updateDriverOffer(@RequestHeader(value = "token") String token,
@@ -106,31 +111,7 @@ public class DriverOfferController
 	{
 		if (userService.authentication(token))
 		{
-			if (driverOfferService.updateDriverOffer(driverOffer))
-				return new ResponseEntity<>("updateDriverOffer is not implemented.", HttpStatus.OK);
-
-			return new ResponseEntity<>("Unknown driverOffer.", HttpStatus.BAD_REQUEST);
-		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-	}
-
-	/**
-	 * Update driver offer status.
-	 * 
-	 * @param token token used for user identification
-	 * @param offerStatusName offer status name
-	 * @param driverOffer the driver offer
-	 * @return updatedDriverOffer updated driver offer
-	 */
-	@PostMapping("/driverOffer/updateStatus")
-	public ResponseEntity<?> updateDriverOfferStatus(@RequestHeader(value = "token") String token,
-			@RequestHeader(value = "offerStatusName") String offerStatusName,
-			@RequestBody DriverOffer driverOffer)
-	{
-		if (userService.authentication(token))
-		{
-			String errors = driverOfferService.updateDriverOfferStatus(driverOffer,
-					offerStatusName);
+			String errors = driverOfferService.updateDriverOffer(driverOffer);
 			if (errors.isEmpty())
 				return new ResponseEntity<>(driverOffer, HttpStatus.OK);
 
@@ -199,7 +180,7 @@ public class DriverOfferController
 			if (foundUserVehicle != null)
 				return new ResponseEntity<>(foundUserVehicle, HttpStatus.OK);
 
-			return new ResponseEntity<>("Unknown vehicle.", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(Messages.UNKNOWN_VEHICLE, HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 	}
@@ -264,5 +245,16 @@ public class DriverOfferController
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	}
+
+	/**
+	 * Handle data not saved.
+	 *
+	 * @param exc exception
+	 */
+	@ExceptionHandler(DataNotSavedException.class)
+	public ResponseEntity<String> handleDataNotSaved(DataNotSavedException exc)
+	{
+		return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 }
