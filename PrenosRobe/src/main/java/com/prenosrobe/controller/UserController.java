@@ -153,17 +153,12 @@ public class UserController
 	/**
 	 * Get the all languages.
 	 *
-	 * @param token token used for user identification
 	 * @return languages list of all supported languages
 	 */
 	@GetMapping("/languages")
-	public ResponseEntity<List<Language>> getAllLanguages(
-			@RequestHeader(value = "token") String token)
+	public ResponseEntity<List<Language>> getAllLanguages()
 	{
-		if (userService.authentication(token))
-			return new ResponseEntity<>(userService.getAllLanguages(), HttpStatus.OK);
-
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return new ResponseEntity<>(userService.getAllLanguages(), HttpStatus.OK);
 	}
 
 	/**

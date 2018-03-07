@@ -19,6 +19,10 @@ import javax.validation.Valid;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.prenosrobe.util.SqlDateSerializer;
+
 @Entity
 @Table(name = "user")
 @SuppressWarnings("serial")
@@ -29,6 +33,8 @@ public class User implements Serializable
 	@Column(name = "user_id")
 	private Integer id;
 
+	@JsonSerialize(using = SqlDateSerializer.class)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Europe/Budapest")
 	@Column(name = "created_at")
 	private Date createdAt = new Date();
 

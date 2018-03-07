@@ -123,43 +123,23 @@ public class DriverOfferController
 	/**
 	 * Get the all driver offers.
 	 *
-	 * @param token token used for user identification
 	 * @return driver offers list of all driver offers
 	 */
 	@GetMapping("/driverOffers")
-	public ResponseEntity<List<DriverOffer>> getAllDriverOffers(
-			@RequestHeader(value = "token") String token)
+	public ResponseEntity<List<DriverOffer>> getAllDriverOffers()
 	{
-		if (userService.authentication(token))
-		{
-			List<DriverOffer> driverOffers = driverOfferService.getAll();
-			if (!driverOffers.isEmpty())
-				return new ResponseEntity<>(driverOffers, HttpStatus.OK);
-
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return new ResponseEntity<>(driverOfferService.getAll(), HttpStatus.OK);
 	}
 
 	/**
 	 * Get the all offer statuses.
 	 *
-	 * @param token token used for user identification
 	 * @return offerStatuses list of all supported offer statuses
 	 */
 	@GetMapping("/offerStatuses")
-	public ResponseEntity<List<OfferStatus>> getAllOfferStatuses(
-			@RequestHeader(value = "token") String token)
+	public ResponseEntity<List<OfferStatus>> getAllOfferStatuses()
 	{
-		if (userService.authentication(token))
-		{
-			List<OfferStatus> offerStatuses = driverOfferService.getAllOfferStatuses();
-			if (!offerStatuses.isEmpty())
-				return new ResponseEntity<>(offerStatuses, HttpStatus.OK);
-
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return new ResponseEntity<>(driverOfferService.getAllOfferStatuses(), HttpStatus.OK);
 	}
 
 	/**

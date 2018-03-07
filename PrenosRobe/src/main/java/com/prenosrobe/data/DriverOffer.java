@@ -24,6 +24,12 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.prenosrobe.util.SqlDateSerializer;
+import com.prenosrobe.util.SqlTimeDeserializer;
+
 @Entity
 @Table(name = "driver_offer")
 @SuppressWarnings("serial")
@@ -43,10 +49,14 @@ public class DriverOffer implements Serializable
 	private String arrivalLocation;
 
 	@NotNull
+	@JsonSerialize(using = SqlDateSerializer.class)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Europe/Budapest")
 	@Column(name = "date")
 	private Date date;
 
 	@Column(name = "time")
+	@JsonFormat(pattern = "HH:mm")
+	@JsonDeserialize(using = SqlTimeDeserializer.class)
 	private Time time;
 
 	@Valid
