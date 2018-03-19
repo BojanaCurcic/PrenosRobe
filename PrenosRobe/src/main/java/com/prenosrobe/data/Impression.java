@@ -16,9 +16,10 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "impression")
-@SuppressWarnings("serial")
 public class Impression implements Serializable
 {
+	private static final long serialVersionUID = 2258394587369467912L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "impression_id")

@@ -17,9 +17,10 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "claimer_offer")
-@SuppressWarnings("serial")
 public class ClaimerOffer implements Serializable
 {
+	private static final long serialVersionUID = -2550213712531148660L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "claimer_offer_id")

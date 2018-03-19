@@ -69,7 +69,7 @@ public class ClaimerOfferController
 			if (claimerOffer != null)
 				return new ResponseEntity<>(claimerOffer, HttpStatus.OK);
 
-			return new ResponseEntity<>(Messages.UNKNOWN_CLAIMER_OFFER, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(Messages.UNKNOWN_CLAIMER_OFFER, HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 	}
@@ -108,7 +108,7 @@ public class ClaimerOfferController
 			if (claimerOffers != null)
 				return new ResponseEntity<>(claimerOffers, HttpStatus.OK);
 
-			return new ResponseEntity<>(Messages.UNKNOWN_DRIVER_OFFER, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(Messages.UNKNOWN_DRIVER_OFFER, HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 	}

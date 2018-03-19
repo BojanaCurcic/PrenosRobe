@@ -13,9 +13,10 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "language")
-@SuppressWarnings("serial")
 public class Language implements Serializable
 {
+	private static final long serialVersionUID = 4145308471230297139L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "language_id")

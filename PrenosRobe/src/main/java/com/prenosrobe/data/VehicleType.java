@@ -13,9 +13,10 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "vehicle_type")
-@SuppressWarnings("serial")
 public class VehicleType implements Serializable
 {
+	private static final long serialVersionUID = 581889021024109202L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "vehicle_type_id")

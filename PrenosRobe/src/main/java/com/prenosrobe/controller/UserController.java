@@ -60,7 +60,7 @@ public class UserController
 		if (logdedInUser != null)
 			return new ResponseEntity<>(logdedInUser, HttpStatus.OK);
 
-		return new ResponseEntity<>(Messages.UNKNOWN_USER, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(Messages.UNKNOWN_USER, HttpStatus.NO_CONTENT);
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class UserController
 			if (userService.logout(token))
 				return new ResponseEntity<>(HttpStatus.OK);
 
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 	}
@@ -98,7 +98,7 @@ public class UserController
 			if (user != null)
 				return new ResponseEntity<>(user, HttpStatus.OK);
 
-			return new ResponseEntity<>(Messages.UNKNOWN_USER, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(Messages.UNKNOWN_USER, HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 	}

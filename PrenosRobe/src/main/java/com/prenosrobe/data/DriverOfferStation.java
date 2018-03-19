@@ -15,9 +15,10 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "driver_offer_station")
-@SuppressWarnings("serial")
 public class DriverOfferStation implements Serializable
 {
+	private static final long serialVersionUID = 1947604447550803643L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "driver_offer_station_id")

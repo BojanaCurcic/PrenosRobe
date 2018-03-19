@@ -76,7 +76,7 @@ public class DriverOfferController
 			if (driverOffer != null)
 				return new ResponseEntity<>(driverOffer, HttpStatus.OK);
 
-			return new ResponseEntity<>(UNKNOWN_DRIVER_OFFER, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(UNKNOWN_DRIVER_OFFER, HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 	}
@@ -160,7 +160,7 @@ public class DriverOfferController
 			if (foundUserVehicle != null)
 				return new ResponseEntity<>(foundUserVehicle, HttpStatus.OK);
 
-			return new ResponseEntity<>(Messages.UNKNOWN_VEHICLE, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(Messages.UNKNOWN_VEHICLE, HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 	}

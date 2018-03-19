@@ -32,9 +32,10 @@ import com.prenosrobe.util.SqlTimeDeserializer;
 
 @Entity
 @Table(name = "driver_offer")
-@SuppressWarnings("serial")
 public class DriverOffer implements Serializable
 {
+	private static final long serialVersionUID = 1880985623188199347L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "driver_offer_id")

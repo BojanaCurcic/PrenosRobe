@@ -315,8 +315,7 @@ public class UserService
 
 		for (UserLanguage userLanguage : user.getUserLanguages())
 		{
-			if (userLanguage.getUserId() != user.getId())
-				userLanguage.setUserId(user.getId());
+			userLanguage.setUserId(user.getId());
 
 			Language language = userLanguage.getLanguage();
 			Language foundLanguage = languageRepository.findByName(language.getName());

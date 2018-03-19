@@ -25,9 +25,10 @@ import com.prenosrobe.util.SqlDateSerializer;
 
 @Entity
 @Table(name = "user")
-@SuppressWarnings("serial")
 public class User implements Serializable
 {
+	private static final long serialVersionUID = 8129870724835467826L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "user_id")

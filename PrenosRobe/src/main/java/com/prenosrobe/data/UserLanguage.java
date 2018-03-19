@@ -15,15 +15,15 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "user_language")
-@SuppressWarnings("serial")
 public class UserLanguage implements Serializable
 {
+	private static final long serialVersionUID = 1375492495368845668L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "user_language_id")
 	private Integer id;
 
-	@NotNull
 	@Column(name = "user_id")
 	private Integer userId;
 
