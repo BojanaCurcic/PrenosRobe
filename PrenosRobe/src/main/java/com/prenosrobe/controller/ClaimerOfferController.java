@@ -1,5 +1,6 @@
 package com.prenosrobe.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.prenosrobe.data.ClaimerOffer;
+import com.prenosrobe.dto.RestRespondeDto;
 import com.prenosrobe.exception.DataNotSavedException;
 import com.prenosrobe.exception.Messages;
 import com.prenosrobe.service.ClaimerOfferService;
 import com.prenosrobe.service.UserService;
+import com.prenosrobe.util.ResponseEntityUtil;
 
 @RestController
 public class ClaimerOfferController
@@ -38,18 +41,20 @@ public class ClaimerOfferController
 	 * @return claimerOffer claimer offer with all its information
 	 */
 	@PostMapping("/claimerOffer/add")
-	public ResponseEntity<?> add(@RequestHeader(value = "token") String token,
+	public ResponseEntity<RestRespondeDto> add(@RequestHeader(value = "token") String token,
 			@RequestBody ClaimerOffer claimerOffer)
 	{
 		if (userService.authentication(token))
 		{
-			String errors = claimerOfferService.add(claimerOffer);
-			if (errors.isEmpty())
-				return new ResponseEntity<>(claimerOffer, HttpStatus.CREATED);
+			List<String> errorList = claimerOfferService.add(claimerOffer);
+			if (errorList.isEmpty())
+				return new ResponseEntity<>(
+						new RestRespondeDto(HttpStatus.CREATED.value(), claimerOffer),
+						HttpStatus.CREATED);
 
-			return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+			return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -60,18 +65,19 @@ public class ClaimerOfferController
 	 * @return claimerOffer claimer offer with all its information
 	 */
 	@GetMapping("/claimerOffer/{id}")
-	public ResponseEntity<?> getClaimerOfferById(@PathVariable Long id,
+	public ResponseEntity<RestRespondeDto> getClaimerOfferById(@PathVariable Long id,
 			@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
 		{
 			ClaimerOffer claimerOffer = claimerOfferService.getClaimerOfferById(id.intValue());
 			if (claimerOffer != null)
-				return new ResponseEntity<>(claimerOffer, HttpStatus.OK);
+				return new ResponseEntity<>(
+						new RestRespondeDto(HttpStatus.OK.value(), claimerOffer), HttpStatus.OK);
 
-			return new ResponseEntity<>(Messages.UNKNOWN_CLAIMER_OFFER, HttpStatus.NO_CONTENT);
+			return ResponseEntityUtil.createResponseEntityNoContent(Messages.UNKNOWN_CLAIMER_OFFER);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -81,14 +87,15 @@ public class ClaimerOfferController
 	 * @return my claimer offers
 	 */
 	@GetMapping("/myClaimerOffers")
-	public ResponseEntity<List<ClaimerOffer>> myClaimerOffers(
+	public ResponseEntity<RestRespondeDto> myClaimerOffers(
 			@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
 		{
-			return new ResponseEntity<>(claimerOfferService.myClaimerOffers(token), HttpStatus.OK);
+			return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(),
+					claimerOfferService.myClaimerOffers(token)), HttpStatus.OK);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -98,19 +105,20 @@ public class ClaimerOfferController
 	 * @return claimer offers given for driver offer
 	 */
 	@GetMapping("/claimerOffers/{driverOfferId}")
-	public ResponseEntity<?> getClaimerOffersByDriverOfferId(@PathVariable Long driverOfferId,
-			@RequestHeader(value = "token") String token)
+	public ResponseEntity<RestRespondeDto> getClaimerOffersByDriverOfferId(
+			@PathVariable Long driverOfferId, @RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
 		{
 			List<ClaimerOffer> claimerOffers = claimerOfferService
 					.getClaimerOffersByDriverOfferId(driverOfferId.intValue());
 			if (claimerOffers != null)
-				return new ResponseEntity<>(claimerOffers, HttpStatus.OK);
+				return new ResponseEntity<>(
+						new RestRespondeDto(HttpStatus.OK.value(), claimerOffers), HttpStatus.OK);
 
-			return new ResponseEntity<>(Messages.UNKNOWN_DRIVER_OFFER, HttpStatus.NO_CONTENT);
+			return ResponseEntityUtil.createResponseEntityNoContent(Messages.UNKNOWN_DRIVER_OFFER);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -121,18 +129,19 @@ public class ClaimerOfferController
 	 * @return updatedClaimerOffer updated claimer offer
 	 */
 	@PostMapping("/claimerOffer/update")
-	public ResponseEntity<?> updateClaimerOffer(@RequestHeader(value = "token") String token,
-			@RequestBody ClaimerOffer claimerOffer)
+	public ResponseEntity<RestRespondeDto> updateClaimerOffer(
+			@RequestHeader(value = "token") String token, @RequestBody ClaimerOffer claimerOffer)
 	{
 		if (userService.authentication(token))
 		{
-			String errors = claimerOfferService.updateClaimerOffer(claimerOffer);
-			if (errors.isEmpty())
-				return new ResponseEntity<>(claimerOffer, HttpStatus.OK);
+			List<String> errorList = claimerOfferService.updateClaimerOffer(claimerOffer);
+			if (errorList.isEmpty())
+				return new ResponseEntity<>(
+						new RestRespondeDto(HttpStatus.OK.value(), claimerOffer), HttpStatus.OK);
 
-			return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+			return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -141,8 +150,11 @@ public class ClaimerOfferController
 	 * @param exc exception
 	 */
 	@ExceptionHandler(DataNotSavedException.class)
-	public ResponseEntity<String> handleDataNotSaved(DataNotSavedException exc)
+	public ResponseEntity<RestRespondeDto> handleDataNotSaved(DataNotSavedException exc)
 	{
-		return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);
+		List<String> errorList = new ArrayList<>();
+		errorList.add(exc.getMessage());
+
+		return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
 	}
 }

@@ -1,5 +1,6 @@
 package com.prenosrobe.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,11 +17,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.prenosrobe.data.Impression;
-import com.prenosrobe.data.Language;
 import com.prenosrobe.data.User;
+import com.prenosrobe.dto.RestRespondeDto;
 import com.prenosrobe.exception.DataNotSavedException;
 import com.prenosrobe.exception.Messages;
 import com.prenosrobe.service.UserService;
+import com.prenosrobe.util.ResponseEntityUtil;
 
 @RestController
 public class UserController
@@ -38,13 +40,14 @@ public class UserController
 	 * @return user user with all its information
 	 */
 	@PostMapping("/user/register")
-	public ResponseEntity<?> add(@RequestBody User user, HttpServletRequest request)
+	public ResponseEntity<RestRespondeDto> add(@RequestBody User user, HttpServletRequest request)
 	{
-		String errors = userService.register(user);
-		if (errors.isEmpty())
-			return new ResponseEntity<>(user, HttpStatus.CREATED);
+		List<String> errorList = userService.register(user);
+		if (errorList.isEmpty())
+			return new ResponseEntity<>(new RestRespondeDto(HttpStatus.CREATED.value(), user),
+					HttpStatus.CREATED);
 
-		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+		return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
 	}
 
 	/**
@@ -54,13 +57,14 @@ public class UserController
 	 * @return user user with all its information
 	 */
 	@PostMapping("/user/login")
-	public ResponseEntity<?> login(@RequestBody User user)
+	public ResponseEntity<RestRespondeDto> login(@RequestBody User user)
 	{
 		User logdedInUser = userService.login(user);
 		if (logdedInUser != null)
-			return new ResponseEntity<>(logdedInUser, HttpStatus.OK);
+			return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(), logdedInUser),
+					HttpStatus.OK);
 
-		return new ResponseEntity<>(Messages.UNKNOWN_USER, HttpStatus.NO_CONTENT);
+		return ResponseEntityUtil.createResponseEntityNoContent(Messages.UNKNOWN_USER);
 	}
 
 	/**
@@ -69,16 +73,17 @@ public class UserController
 	 * @param token token for user identification
 	 */
 	@PostMapping("/user/logout")
-	public ResponseEntity<String> logout(@RequestHeader(value = "token") String token)
+	public ResponseEntity<RestRespondeDto> logout(@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
 		{
 			if (userService.logout(token))
-				return new ResponseEntity<>(HttpStatus.OK);
+				return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value()),
+						HttpStatus.OK);
 
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			return ResponseEntityUtil.createResponseEntityNoContent(Messages.UNKNOWN_USER);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -89,18 +94,19 @@ public class UserController
 	 * @return user user with all its information
 	 */
 	@GetMapping("/user/{id}")
-	public ResponseEntity<?> getUserById(@PathVariable Long id,
+	public ResponseEntity<RestRespondeDto> getUserById(@PathVariable Long id,
 			@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
 		{
 			User user = userService.getUserById(id.intValue());
 			if (user != null)
-				return new ResponseEntity<>(user, HttpStatus.OK);
+				return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(), user),
+						HttpStatus.OK);
 
-			return new ResponseEntity<>(Messages.UNKNOWN_USER, HttpStatus.NO_CONTENT);
+			return ResponseEntityUtil.createResponseEntityNoContent(Messages.UNKNOWN_USER);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -111,18 +117,19 @@ public class UserController
 	 * @return updatedUser updated user
 	 */
 	@PostMapping("/user/update")
-	public ResponseEntity<?> updateUser(@RequestHeader(value = "token") String token,
+	public ResponseEntity<RestRespondeDto> updateUser(@RequestHeader(value = "token") String token,
 			@RequestBody User user)
 	{
 		if (userService.authentication(token))
 		{
-			String errors = userService.updateUser(user);
-			if (errors.isEmpty())
-				return new ResponseEntity<>(user, HttpStatus.OK);
+			List<String> errorList = userService.updateUser(user);
+			if (errorList.isEmpty())
+				return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(), user),
+						HttpStatus.OK);
 
-			return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+			return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -136,18 +143,19 @@ public class UserController
 	 * @param impression impression
 	 */
 	@PostMapping("impression")
-	public ResponseEntity<String> addImpression(@RequestHeader(value = "token") String token,
-			@RequestBody Impression impression)
+	public ResponseEntity<RestRespondeDto> addImpression(
+			@RequestHeader(value = "token") String token, @RequestBody Impression impression)
 	{
 		if (userService.authentication(token))
 		{
-			String errors = userService.addImpression(impression);
-			if (errors.isEmpty())
-				return new ResponseEntity<>(HttpStatus.OK);
+			List<String> errorList = userService.addImpression(impression);
+			if (errorList.isEmpty())
+				return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value()),
+						HttpStatus.OK);
 
-			return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+			return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -156,9 +164,11 @@ public class UserController
 	 * @return languages list of all supported languages
 	 */
 	@GetMapping("/languages")
-	public ResponseEntity<List<Language>> getAllLanguages()
+	public ResponseEntity<RestRespondeDto> getAllLanguages()
 	{
-		return new ResponseEntity<>(userService.getAllLanguages(), HttpStatus.OK);
+		return new ResponseEntity<>(
+				new RestRespondeDto(HttpStatus.OK.value(), userService.getAllLanguages()),
+				HttpStatus.OK);
 	}
 
 	/**
@@ -167,8 +177,11 @@ public class UserController
 	 * @param exc exception
 	 */
 	@ExceptionHandler(DataNotSavedException.class)
-	public ResponseEntity<String> handleDataNotSaved(DataNotSavedException exc)
+	public ResponseEntity<RestRespondeDto> handleDataNotSaved(DataNotSavedException exc)
 	{
-		return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);
+		List<String> errorList = new ArrayList<>();
+		errorList.add(exc.getMessage());
+
+		return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
 	}
 }

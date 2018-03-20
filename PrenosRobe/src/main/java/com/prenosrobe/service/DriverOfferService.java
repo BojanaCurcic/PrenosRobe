@@ -67,11 +67,11 @@ public class DriverOfferService
 	 * @param driverOffer driver offer
 	 * @return driverOffer driver offer with all its information
 	 */
-	public String add(DriverOffer driverOffer)
+	public List<String> add(DriverOffer driverOffer)
 	{
-		String errors = validateDriverOffer(driverOffer);
+		List<String> errorList = validateDriverOffer(driverOffer);
 
-		if (errors.isEmpty())
+		if (errorList.isEmpty())
 		{
 			try
 			{
@@ -85,7 +85,7 @@ public class DriverOfferService
 				throw new DataNotSavedException(e.getMessage(), e);
 			}
 		}
-		return errors;
+		return errorList;
 	}
 
 	/**
@@ -125,14 +125,14 @@ public class DriverOfferService
 	 * Update driver offer.
 	 *
 	 * @param updatedDriverOffer updated driver offer
-	 * @return errors
+	 * @return error list
 	 */
-	public String updateDriverOffer(DriverOffer updatedDriverOffer)
+	public List<String> updateDriverOffer(DriverOffer updatedDriverOffer)
 	{
-		StringBuilder errors = new StringBuilder();
-		errors.append(validateDriverOffer(updatedDriverOffer));
+		List<String> errorList = new ArrayList<>();
+		errorList.addAll(validateDriverOffer(updatedDriverOffer));
 
-		if (errors.toString().isEmpty())
+		if (errorList.isEmpty())
 		{
 			try
 			{
@@ -145,7 +145,7 @@ public class DriverOfferService
 			}
 		}
 
-		return errors.toString();
+		return errorList;
 	}
 
 	/**
@@ -162,34 +162,35 @@ public class DriverOfferService
 	 * Validate driver offer.
 	 *
 	 * @param driverOffer driver offer
-	 * @return errors
+	 * @return error list
 	 */
-	private String validateDriverOffer(DriverOffer driverOffer)
+	private List<String> validateDriverOffer(DriverOffer driverOffer)
 	{
-		StringBuilder errors = new StringBuilder();
+		List<String> errorList = new ArrayList<>();
 
 		Set<ConstraintViolation<DriverOffer>> constraintViolations = validator
 				.validate(driverOffer);
-		constraintViolations.iterator().forEachRemaining(constrain -> errors.append(
-				"\"" + constrain.getPropertyPath() + "\" " + constrain.getMessage() + ". "));
+		constraintViolations.iterator().forEachRemaining(constrain -> errorList
+				.add("\"" + constrain.getPropertyPath() + "\" " + constrain.getMessage() + ". "));
 
-		if (errors.toString().isEmpty())
+		if (errorList.isEmpty())
 		{
 			// Validate offer status
 			OfferStatus foundOfferStatus = offersStatusRepository
 					.findByName(driverOffer.getOfferStatus().getName());
 			if (foundOfferStatus == null)
-				errors.append(Messages.UNKNOWN_OFFER_STATUS);
+				errorList.add(Messages.UNKNOWN_OFFER_STATUS);
 			else
 				driverOffer.setOfferStatus(foundOfferStatus);
 
 			// Find user
-			User foundUser = findUser(driverOffer.getUserVehicle().getUser().getEmail(), errors);
+			User foundUser = findUser(driverOffer.getUserVehicle().getUser().getEmail(), errorList);
 
 			// Find vehicle
 			Vehicle foundVehicle = findVehicle(
 					driverOffer.getUserVehicle().getVehicle().getRegistrationNumber(),
-					driverOffer.getUserVehicle().getVehicle().getVehicleType().getName(), errors);
+					driverOffer.getUserVehicle().getVehicle().getVehicleType().getName(),
+					errorList);
 
 			// Validate user vehicle
 			if (foundUser != null && foundVehicle != null)
@@ -211,21 +212,21 @@ public class DriverOfferService
 			}
 		}
 
-		return errors.toString();
+		return errorList;
 	}
 
 	/**
 	 * Find user.
 	 *
 	 * @param email email
-	 * @param errors errors
+	 * @param errorList error list
 	 * @return found user
 	 */
-	private User findUser(final String email, StringBuilder errors)
+	private User findUser(final String email, List<String> errorList)
 	{
 		User foundUser = userRepository.findByEmail(email);
 		if (foundUser == null)
-			errors.append(Messages.UNKNOWN_USER_VEHICLE_USER);
+			errorList.add(Messages.UNKNOWN_USER_VEHICLE_USER);
 
 		return foundUser;
 	}
@@ -235,18 +236,18 @@ public class DriverOfferService
 	 *
 	 * @param registrationNumber registration number
 	 * @param vehicleTypeName vehicle type name
-	 * @param errors errors
+	 * @param errorList error list
 	 * @return found vehicle
 	 */
 	private Vehicle findVehicle(final String registrationNumber, final String vehicleTypeName,
-			StringBuilder errors)
+			List<String> errorList)
 	{
 		Vehicle foundVehicle = vehicleRepository.findByRegistrationNumber(registrationNumber);
 		if (foundVehicle == null)
 		{
 			VehicleType foundVehicleType = vehicleTypeRepository.findByName(vehicleTypeName);
 			if (foundVehicleType == null)
-				errors.append(Messages.UNKNOWN_USER_VEHICLE_VEHICLE_VEHICLE_TYPE);
+				errorList.add(Messages.UNKNOWN_USER_VEHICLE_VEHICLE_VEHICLE_TYPE);
 			else
 			{
 				try

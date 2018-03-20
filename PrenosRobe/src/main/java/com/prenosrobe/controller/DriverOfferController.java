@@ -1,5 +1,6 @@
 package com.prenosrobe.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,22 +14,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.prenosrobe.data.Area;
 import com.prenosrobe.data.DriverOffer;
-import com.prenosrobe.data.OfferStatus;
-import com.prenosrobe.data.Station;
 import com.prenosrobe.data.UserVehicle;
-import com.prenosrobe.data.VehicleType;
+import com.prenosrobe.dto.RestRespondeDto;
 import com.prenosrobe.exception.DataNotSavedException;
 import com.prenosrobe.exception.Messages;
 import com.prenosrobe.service.DriverOfferService;
 import com.prenosrobe.service.UserService;
+import com.prenosrobe.util.ResponseEntityUtil;
 
 @RestController
 public class DriverOfferController
 {
-	private static final String UNKNOWN_DRIVER_OFFER = "Unknown driver offer. ";
-
 	@Autowired
 	private DriverOfferService driverOfferService;
 
@@ -45,18 +42,20 @@ public class DriverOfferController
 	 * @return driverOffer driver offer with all its information
 	 */
 	@PostMapping("/driverOffer/add")
-	public ResponseEntity<?> add(@RequestHeader(value = "token") String token,
+	public ResponseEntity<RestRespondeDto> add(@RequestHeader(value = "token") String token,
 			@RequestBody DriverOffer driverOffer)
 	{
 		if (userService.authentication(token))
 		{
-			String errors = driverOfferService.add(driverOffer);
-			if (errors.isEmpty())
-				return new ResponseEntity<>(driverOffer, HttpStatus.CREATED);
+			List<String> errorList = driverOfferService.add(driverOffer);
+			if (errorList.isEmpty())
+				return new ResponseEntity<>(
+						new RestRespondeDto(HttpStatus.CREATED.value(), driverOffer),
+						HttpStatus.CREATED);
 
-			return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+			return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -67,18 +66,20 @@ public class DriverOfferController
 	 * @return driverOffer driver offer with all its information
 	 */
 	@GetMapping("/driverOffer/{id}")
-	public ResponseEntity<?> getDriverOfferById(@PathVariable Long id,
+	public ResponseEntity<RestRespondeDto> getDriverOfferById(@PathVariable Long id,
 			@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
 		{
 			DriverOffer driverOffer = driverOfferService.getDriverOfferById(id.intValue());
 			if (driverOffer != null)
-				return new ResponseEntity<>(driverOffer, HttpStatus.OK);
+				return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(), driverOffer),
+						HttpStatus.OK);
 
-			return new ResponseEntity<>(UNKNOWN_DRIVER_OFFER, HttpStatus.NO_CONTENT);
+			return ResponseEntityUtil
+					.createResponseEntityNoContent(Messages.UNKNOWN_DRIVER_OFFER);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -88,14 +89,15 @@ public class DriverOfferController
 	 * @return my driver offers
 	 */
 	@GetMapping("/myDriverOffers")
-	public ResponseEntity<List<DriverOffer>> getMyDriverOffers(
+	public ResponseEntity<RestRespondeDto> getMyDriverOffers(
 			@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
 		{
-			return new ResponseEntity<>(driverOfferService.getMyDriverOffers(token), HttpStatus.OK);
+			return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(),
+					driverOfferService.getMyDriverOffers(token)), HttpStatus.OK);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -106,18 +108,19 @@ public class DriverOfferController
 	 * @return updatedDriverOffer updated driver offer
 	 */
 	@PostMapping("/driverOffer/update")
-	public ResponseEntity<?> updateDriverOffer(@RequestHeader(value = "token") String token,
-			@RequestBody DriverOffer driverOffer)
+	public ResponseEntity<RestRespondeDto> updateDriverOffer(
+			@RequestHeader(value = "token") String token, @RequestBody DriverOffer driverOffer)
 	{
 		if (userService.authentication(token))
 		{
-			String errors = driverOfferService.updateDriverOffer(driverOffer);
-			if (errors.isEmpty())
-				return new ResponseEntity<>(driverOffer, HttpStatus.OK);
+			List<String> errorList = driverOfferService.updateDriverOffer(driverOffer);
+			if (errorList.isEmpty())
+				return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(), driverOffer),
+						HttpStatus.OK);
 
-			return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+			return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -126,9 +129,11 @@ public class DriverOfferController
 	 * @return driver offers list of all driver offers
 	 */
 	@GetMapping("/driverOffers")
-	public ResponseEntity<List<DriverOffer>> getAllDriverOffers()
+	public ResponseEntity<RestRespondeDto> getAllDriverOffers()
 	{
-		return new ResponseEntity<>(driverOfferService.getAll(), HttpStatus.OK);
+		return new ResponseEntity<>(
+				new RestRespondeDto(HttpStatus.OK.value(), driverOfferService.getAll()),
+				HttpStatus.OK);
 	}
 
 	/**
@@ -137,9 +142,10 @@ public class DriverOfferController
 	 * @return offerStatuses list of all supported offer statuses
 	 */
 	@GetMapping("/offerStatuses")
-	public ResponseEntity<List<OfferStatus>> getAllOfferStatuses()
+	public ResponseEntity<RestRespondeDto> getAllOfferStatuses()
 	{
-		return new ResponseEntity<>(driverOfferService.getAllOfferStatuses(), HttpStatus.OK);
+		return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(),
+				driverOfferService.getAllOfferStatuses()), HttpStatus.OK);
 	}
 
 	/**
@@ -150,7 +156,7 @@ public class DriverOfferController
 	 * @return the vehicle by registration number
 	 */
 	@GetMapping("/userVehicle/{registrationNumber}")
-	public ResponseEntity<?> getUserVehicleByRegistrationNumber(
+	public ResponseEntity<RestRespondeDto> getUserVehicleByRegistrationNumber(
 			@RequestHeader(value = "token") String token, @PathVariable String registrationNumber)
 	{
 		if (userService.authentication(token))
@@ -158,11 +164,14 @@ public class DriverOfferController
 			UserVehicle foundUserVehicle = driverOfferService
 					.getUserVehicleByRegistrationNumber(registrationNumber, token);
 			if (foundUserVehicle != null)
-				return new ResponseEntity<>(foundUserVehicle, HttpStatus.OK);
+				return new ResponseEntity<>(
+						new RestRespondeDto(HttpStatus.OK.value(), foundUserVehicle),
+						HttpStatus.OK);
 
-			return new ResponseEntity<>(Messages.UNKNOWN_VEHICLE, HttpStatus.NO_CONTENT);
+			return ResponseEntityUtil
+					.createResponseEntityNoContent(Messages.UNKNOWN_VEHICLE);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -172,18 +181,15 @@ public class DriverOfferController
 	 * @return vehicleTypes list of all supported vehicle types
 	 */
 	@GetMapping("/vehicleTypes")
-	public ResponseEntity<List<VehicleType>> getAllVehicleTypes(
+	public ResponseEntity<RestRespondeDto> getAllVehicleTypes(
 			@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
 		{
-			List<VehicleType> vehicleTypes = driverOfferService.getAllVehicleTypes();
-			if (!vehicleTypes.isEmpty())
-				return new ResponseEntity<>(vehicleTypes, HttpStatus.OK);
-
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(),
+					driverOfferService.getAllVehicleTypes()), HttpStatus.OK);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -193,38 +199,29 @@ public class DriverOfferController
 	 * @return stations list of all currently supported stations
 	 */
 	@GetMapping("/stations")
-	public ResponseEntity<List<Station>> getAllStations(
+	public ResponseEntity<RestRespondeDto> getAllStations(
 			@RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
 		{
-			List<Station> stations = driverOfferService.getAllStations();
-			if (!stations.isEmpty())
-				return new ResponseEntity<>(stations, HttpStatus.OK);
-
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(
+					new RestRespondeDto(HttpStatus.OK.value(), driverOfferService.getAllStations()),
+					HttpStatus.OK);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
 	 * Get the all areas.
 	 *
-	 * @param token token used for user identification
 	 * @return areas list of all currently supported areas
 	 */
 	@GetMapping("/areas")
-	public ResponseEntity<List<Area>> getAllAreas(@RequestHeader(value = "token") String token)
+	public ResponseEntity<RestRespondeDto> getAllAreas()
 	{
-		if (userService.authentication(token))
-		{
-			List<Area> areas = driverOfferService.getAllAreas();
-			if (!areas.isEmpty())
-				return new ResponseEntity<>(areas, HttpStatus.OK);
-
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return new ResponseEntity<>(
+				new RestRespondeDto(HttpStatus.OK.value(), driverOfferService.getAllAreas()),
+				HttpStatus.OK);
 	}
 
 	/**
@@ -233,8 +230,11 @@ public class DriverOfferController
 	 * @param exc exception
 	 */
 	@ExceptionHandler(DataNotSavedException.class)
-	public ResponseEntity<String> handleDataNotSaved(DataNotSavedException exc)
+	public ResponseEntity<RestRespondeDto> handleDataNotSaved(DataNotSavedException exc)
 	{
-		return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);
+		List<String> errorList = new ArrayList<>();
+		errorList.add(exc.getMessage());
+
+		return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
 	}
 }

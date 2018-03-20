@@ -52,11 +52,11 @@ public class UserService
 	 * @param user user
 	 * @return user user with all its information
 	 */
-	public String register(User user)
+	public List<String> register(User user)
 	{
-		String errors = validateUser(user);
+		List<String> errorList = validateUser(user);
 
-		if (errors.isEmpty())
+		if (errorList.isEmpty())
 		{
 			// TODO: ocekuj da je password vec kriptovan (smisliti kako kriptovan)
 			user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -76,7 +76,7 @@ public class UserService
 
 			addValidUserLanguagesIntoBase(user);
 		}
-		return errors;
+		return errorList;
 	}
 
 	/**
@@ -148,57 +148,57 @@ public class UserService
 	 * Validate user.
 	 *
 	 * @param user user
-	 * @return errors
+	 * @return error list
 	 */
-	private String validateUser(final User user)
+	private List<String> validateUser(final User user)
 	{
-		StringBuilder errors = new StringBuilder();
+		List<String> errorList = new ArrayList<>();
 
 		Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
-		constraintViolations.iterator().forEachRemaining(constrain -> errors.append(
-				"\"" + constrain.getPropertyPath() + "\" " + constrain.getMessage() + ". "));
+		constraintViolations.iterator().forEachRemaining(constrain -> errorList
+				.add("\"" + constrain.getPropertyPath() + "\" " + constrain.getMessage() + ". "));
 
 		if (userRepository.findByEmail(user.getEmail()) != null)
-			errors.append(Messages.EMAIL_USED);
+			errorList.add(Messages.EMAIL_USED);
 		if (userRepository.findByUsername(user.getUsername()) != null)
-			errors.append(Messages.USERNAME_USED);
+			errorList.add(Messages.USERNAME_USED);
 		if (userRepository.findByPhoneNumber(user.getPhoneNumber()) != null)
-			errors.append(Messages.PHONE_NUMBER_USED);
+			errorList.add(Messages.PHONE_NUMBER_USED);
 
-		return errors.toString();
+		return errorList;
 	}
 
 	/**
 	 * Validate updated user.
 	 *
 	 * @param updatedUser the updated user
-	 * @return errors
+	 * @return error list
 	 */
-	private String validateUpdatedUser(final User updatedUser)
+	private List<String> validateUpdatedUser(final User updatedUser)
 	{
-		StringBuilder errors = new StringBuilder();
+		List<String> errorList = new ArrayList<>();
 
 		Set<ConstraintViolation<User>> constraintViolations = validator.validate(updatedUser);
-		constraintViolations.iterator().forEachRemaining(constrain -> errors.append(
-				"\"" + constrain.getPropertyPath() + "\" " + constrain.getMessage() + ". "));
+		constraintViolations.iterator().forEachRemaining(constrain -> errorList
+				.add("\"" + constrain.getPropertyPath() + "\" " + constrain.getMessage() + ". "));
 
-		if (errors.toString().isEmpty())
+		if (errorList.isEmpty())
 		{
 			User foundUser = userRepository.findOne(updatedUser.getId());
 
 			if (foundUser != null && !foundUser.getEmail().equals(updatedUser.getEmail())
 					&& userRepository.findByEmail(updatedUser.getEmail()) != null)
-				errors.append(Messages.EMAIL_USED);
+				errorList.add(Messages.EMAIL_USED);
 			if (foundUser != null && !foundUser.getUsername().equals(updatedUser.getUsername())
 					&& userRepository.findByUsername(updatedUser.getUsername()) != null)
-				errors.append(Messages.USERNAME_USED);
+				errorList.add(Messages.USERNAME_USED);
 			if (foundUser != null
 					&& !foundUser.getPhoneNumber().equals(updatedUser.getPhoneNumber())
 					&& userRepository.findByPhoneNumber(updatedUser.getPhoneNumber()) != null)
-				errors.append(Messages.PHONE_NUMBER_USED);
+				errorList.add(Messages.PHONE_NUMBER_USED);
 		}
 
-		return errors.toString();
+		return errorList;
 	}
 
 	/**
@@ -216,12 +216,12 @@ public class UserService
 	 * Update user. Parameter user should have set all fields, including 'id'.
 	 * 
 	 * @param updatedUser updated user
-	 * @return errors
+	 * @return error list
 	 */
-	public String updateUser(User updatedUser)
+	public List<String> updateUser(User updatedUser)
 	{
-		String errors = validateUpdatedUser(updatedUser);
-		if (errors.isEmpty())
+		List<String> errorList = validateUpdatedUser(updatedUser);
+		if (errorList.isEmpty())
 		{
 			try
 			{
@@ -234,7 +234,7 @@ public class UserService
 				throw new DataNotSavedException(e.getMessage(), e);
 			}
 		}
-		return errors;
+		return errorList;
 	}
 
 	/**
@@ -245,13 +245,13 @@ public class UserService
 	 * field 'correctlyPaid' should be set. All of these fields must have values between 1 and 10. 
 	 *
 	 * @param impression impression
-	 * @return errors
+	 * @return error list
 	 */
-	public String addImpression(Impression impression)
+	public List<String> addImpression(Impression impression)
 	{
-		String errors = validateImpression(impression);
+		List<String> errorList = validateImpression(impression);
 
-		if (errors.isEmpty())
+		if (errorList.isEmpty())
 		{
 			try
 			{
@@ -261,37 +261,37 @@ public class UserService
 				throw new DataNotSavedException(e.getMessage(), e);
 			}
 		}
-		return errors;
+		return errorList;
 	}
 
 	/**
 	 * Validate impression.
 	 *
 	 * @param impression impression
-	 * @return errors
+	 * @return error list
 	 */
-	private String validateImpression(Impression impression)
+	private List<String> validateImpression(Impression impression)
 	{
-		StringBuilder errors = new StringBuilder();
+		List<String> errorList = new ArrayList<>();
 
 		Set<ConstraintViolation<Impression>> constraintViolations = validator.validate(impression);
-		constraintViolations.iterator().forEachRemaining(constrain -> errors.append(
-				"\"" + constrain.getPropertyPath() + "\" " + constrain.getMessage() + ". "));
+		constraintViolations.iterator().forEachRemaining(constrain -> errorList
+				.add("\"" + constrain.getPropertyPath() + "\" " + constrain.getMessage() + ". "));
 
 		if (impression.isDriver() != null && impression.isDriver())
 		{
 			if (impression.getDelivered() == null)
-				errors.append(Messages.DELIVERED_IS_NULL);
+				errorList.add(Messages.DELIVERED_IS_NULL);
 			if (impression.getDeliveredUndamaged() == null)
-				errors.append(Messages.DELIVERED_UNDAMAGED_IS_NULL);
+				errorList.add(Messages.DELIVERED_UNDAMAGED_IS_NULL);
 		}
 		else if (impression.isDriver() != null && !impression.isDriver()
 				&& impression.getCorrectlyPaid() == null)
-			errors.append(Messages.CORRECTLY_PAID_IS_NULL);
+			errorList.add(Messages.CORRECTLY_PAID_IS_NULL);
 		if (userRepository.findOne(impression.getUserId()) == null)
-			errors.append(Messages.UNKNOWN_USER);
+			errorList.add(Messages.UNKNOWN_USER);
 
-		return errors.toString();
+		return errorList;
 	}
 
 	/**

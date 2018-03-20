@@ -1,5 +1,6 @@
 package com.prenosrobe.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -56,10 +57,10 @@ public class ClaimerOfferService
 	 * @param claimerOffer claimer offer
 	 * @return claimerOffer claimer offer with all its information
 	 */
-	public String add(ClaimerOffer claimerOffer)
+	public List<String> add(ClaimerOffer claimerOffer)
 	{
-		String errors = validateClaimerOffer(claimerOffer);
-		if (errors.isEmpty())
+		List<String> errorList = validateClaimerOffer(claimerOffer);
+		if (errorList.isEmpty())
 		{
 			try
 			{
@@ -70,7 +71,7 @@ public class ClaimerOfferService
 			}
 		}
 
-		return errors;
+		return errorList;
 	}
 
 	/**
@@ -115,14 +116,14 @@ public class ClaimerOfferService
 	 * Update claimer offer.
 	 * 
 	 * @param updatedClaimerOffer updated claimer offer
-	 * @return errors
+	 * @return error list
 	 */
-	public String updateClaimerOffer(ClaimerOffer updatedClaimerOffer)
+	public List<String> updateClaimerOffer(ClaimerOffer updatedClaimerOffer)
 	{
-		StringBuilder errors = new StringBuilder();
-		errors.append(validateClaimerOffer(updatedClaimerOffer));
+		List<String> errorList = new ArrayList<>();
+		errorList.addAll(validateClaimerOffer(updatedClaimerOffer));
 
-		if (errors.toString().isEmpty())
+		if (errorList.isEmpty())
 		{
 			try
 			{
@@ -133,43 +134,43 @@ public class ClaimerOfferService
 			}
 		}
 
-		return errors.toString();
+		return errorList;
 	}
 
 	/**
 	 * Validate claimer offer.
 	 *
 	 * @param claimerOffer the claimer offer
-	 * @return errors
+	 * @return error list
 	 */
-	private String validateClaimerOffer(ClaimerOffer claimerOffer)
+	private List<String> validateClaimerOffer(ClaimerOffer claimerOffer)
 	{
-		StringBuilder errors = new StringBuilder();
+		List<String> errorList = new ArrayList<>();
 
 		Set<ConstraintViolation<ClaimerOffer>> constraintViolations = validator
 				.validate(claimerOffer);
-		constraintViolations.iterator().forEachRemaining(constrain -> errors.append(
+		constraintViolations.iterator().forEachRemaining(constrain -> errorList.add(
 				"\"" + constrain.getPropertyPath() + "\" " + constrain.getMessage() + ". "));
-		if (errors.toString().isEmpty())
+		if (errorList.isEmpty())
 		{
 			// Validate offer status
 			OfferStatus foundOfferStatus = offersStatusRepository
 					.findByName(claimerOffer.getOfferStatus().getName());
 			if (foundOfferStatus == null)
-				errors.append(Messages.UNKNOWN_OFFER_STATUS);
+				errorList.add(Messages.UNKNOWN_OFFER_STATUS);
 			else
 				claimerOffer.setOfferStatus(foundOfferStatus);
 
 			// Validate user
 			User foundUser = userRepository.findByEmail(claimerOffer.getUser().getEmail());
 			if (foundUser == null)
-				errors.append(Messages.UNKNOWN_USER);
+				errorList.add(Messages.UNKNOWN_USER);
 			else
 				claimerOffer.setUser(foundUser);
 
 			// Find user vehicle
 			UserVehicle foundUserVehicle = findUserVehicle(
-					claimerOffer.getDriverOffer().getUserVehicle(), errors);
+					claimerOffer.getDriverOffer().getUserVehicle(), errorList);
 			if (foundUserVehicle != null)
 			{
 				// Validate driver offer
@@ -178,36 +179,36 @@ public class ClaimerOfferService
 						claimerOffer.getDriverOffer().getDepartureLocation(),
 						claimerOffer.getDriverOffer().getArrivalLocation());
 				if (foundDriverOffer == null)
-					errors.append(Messages.UNKNOWN_DRIVER_OFFER);
+					errorList.add(Messages.UNKNOWN_DRIVER_OFFER);
 				else
 					claimerOffer.setDriverOffer(foundDriverOffer);
 			}
 			else
-				errors.append(Messages.UNKNOWN_DRIVER_OFFER_USER_VEHICLE);
+				errorList.add(Messages.UNKNOWN_DRIVER_OFFER_USER_VEHICLE);
 		}
 
-		return errors.toString();
+		return errorList;
 	}
 
 	/**
 	 * Find user vehicle.
 	 *
 	 * @param userVehicle target user Vehicle
-	 * @param errors errors
+	 * @param erroList error list
 	 * @return found user vehicle
 	 */
-	private UserVehicle findUserVehicle(UserVehicle userVehicle, StringBuilder errors)
+	private UserVehicle findUserVehicle(UserVehicle userVehicle, List<String> errorList)
 	{
 		UserVehicle foundUserVehicle = null;
 
 		User foundUser = userRepository.findByEmail(userVehicle.getUser().getEmail());
 		if (foundUser == null)
-			errors.append(Messages.UNKNOWN_DRIVER_OFFER_USER_VEHICLE_USER);
+			errorList.add(Messages.UNKNOWN_DRIVER_OFFER_USER_VEHICLE_USER);
 
 		Vehicle foundVehicle = vehicleRepository
 				.findByRegistrationNumber(userVehicle.getVehicle().getRegistrationNumber());
 		if (foundVehicle == null)
-			errors.append(Messages.UNKNOWN_DRIVER_OFFER_USER_VEHICLE_VEHICLE);
+			errorList.add(Messages.UNKNOWN_DRIVER_OFFER_USER_VEHICLE_VEHICLE);
 
 		if (foundUser != null && foundVehicle != null)
 			foundUserVehicle = userVehicleRepository.findByUserIdAndVehicleId(foundUser.getId(),
