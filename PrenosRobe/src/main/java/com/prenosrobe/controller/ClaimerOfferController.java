@@ -52,7 +52,7 @@ public class ClaimerOfferController
 						new RestRespondeDto(HttpStatus.CREATED.value(), claimerOffer),
 						HttpStatus.CREATED);
 
-			return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
+			return ResponseEntityUtil.createResponseEntityAlreadyReported(errorList);
 		}
 		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
@@ -139,7 +139,7 @@ public class ClaimerOfferController
 				return new ResponseEntity<>(
 						new RestRespondeDto(HttpStatus.OK.value(), claimerOffer), HttpStatus.OK);
 
-			return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
+			return ResponseEntityUtil.createResponseEntityAlreadyReported(errorList);
 		}
 		return ResponseEntityUtil.createResponseEntityForbidden();
 	}

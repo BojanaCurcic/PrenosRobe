@@ -53,7 +53,7 @@ public class DriverOfferController
 						new RestRespondeDto(HttpStatus.CREATED.value(), driverOffer),
 						HttpStatus.CREATED);
 
-			return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
+			return ResponseEntityUtil.createResponseEntityAlreadyReported(errorList);
 		}
 		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
@@ -76,8 +76,7 @@ public class DriverOfferController
 				return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(), driverOffer),
 						HttpStatus.OK);
 
-			return ResponseEntityUtil
-					.createResponseEntityNoContent(Messages.UNKNOWN_DRIVER_OFFER);
+			return ResponseEntityUtil.createResponseEntityNoContent(Messages.UNKNOWN_DRIVER_OFFER);
 		}
 		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
@@ -118,7 +117,7 @@ public class DriverOfferController
 				return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(), driverOffer),
 						HttpStatus.OK);
 
-			return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
+			return ResponseEntityUtil.createResponseEntityAlreadyReported(errorList);
 		}
 		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
@@ -168,8 +167,7 @@ public class DriverOfferController
 						new RestRespondeDto(HttpStatus.OK.value(), foundUserVehicle),
 						HttpStatus.OK);
 
-			return ResponseEntityUtil
-					.createResponseEntityNoContent(Messages.UNKNOWN_VEHICLE);
+			return ResponseEntityUtil.createResponseEntityNoContent(Messages.UNKNOWN_VEHICLE);
 		}
 		return ResponseEntityUtil.createResponseEntityForbidden();
 	}

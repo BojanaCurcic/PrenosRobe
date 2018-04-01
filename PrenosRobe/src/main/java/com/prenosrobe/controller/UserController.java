@@ -40,14 +40,14 @@ public class UserController
 	 * @return user user with all its information
 	 */
 	@PostMapping("/user/register")
-	public ResponseEntity<RestRespondeDto> add(@RequestBody User user, HttpServletRequest request)
+	public ResponseEntity<RestRespondeDto> register(@RequestBody User user, HttpServletRequest request)
 	{
 		List<String> errorList = userService.register(user);
 		if (errorList.isEmpty())
 			return new ResponseEntity<>(new RestRespondeDto(HttpStatus.CREATED.value(), user),
 					HttpStatus.CREATED);
 
-		return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
+		return ResponseEntityUtil.createResponseEntityAlreadyReported(errorList);
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class UserController
 				return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(), user),
 						HttpStatus.OK);
 
-			return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
+			return ResponseEntityUtil.createResponseEntityAlreadyReported(errorList);
 		}
 		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
@@ -153,7 +153,7 @@ public class UserController
 				return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value()),
 						HttpStatus.OK);
 
-			return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
+			return ResponseEntityUtil.createResponseEntityAlreadyReported(errorList);
 		}
 		return ResponseEntityUtil.createResponseEntityForbidden();
 	}

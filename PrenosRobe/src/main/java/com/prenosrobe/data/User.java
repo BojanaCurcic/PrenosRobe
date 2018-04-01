@@ -21,6 +21,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.prenosrobe.exception.Messages;
 import com.prenosrobe.util.SqlDateSerializer;
 
 @Entity
@@ -56,7 +57,7 @@ public class User implements Serializable
 	private String password;
 
 	@NotEmpty
-	@Email
+	@Email(message = Messages.EMAIL_FORMAT)
 	@Column(name = "email")
 	private String email;
 

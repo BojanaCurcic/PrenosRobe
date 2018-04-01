@@ -11,6 +11,13 @@ import com.prenosrobe.dto.RestRespondeDto;
 public class ResponseEntityUtil
 {
 	/**
+	 * Instantiate a new ResponseEntityUtil.
+	 */
+	private ResponseEntityUtil()
+	{
+	}
+
+	/**
 	 * Create ResponseEntity with status no content.
 	 *
 	 * @param message message
@@ -35,6 +42,19 @@ public class ResponseEntityUtil
 	{
 		return new ResponseEntity<>(new RestRespondeDto(HttpStatus.FORBIDDEN.value()),
 				HttpStatus.FORBIDDEN);
+	}
+
+	/**
+	 * Create ResponseEntity with status already reported.
+	 *
+	 * @param errorList error list
+	 * @return response entity
+	 */
+	public static ResponseEntity<RestRespondeDto> createResponseEntityAlreadyReported(
+			List<String> errorList)
+	{
+		return new ResponseEntity<>(new RestRespondeDto(HttpStatus.ALREADY_REPORTED.value(), errorList),
+				HttpStatus.ALREADY_REPORTED);
 	}
 
 	/**

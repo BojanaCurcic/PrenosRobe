@@ -2,9 +2,10 @@ package com.prenosrobe.exception;
 
 public class Messages
 {
-	public static final String EMAIL_USED = "\"email\" is already used. ";
-	public static final String USERNAME_USED = "\"username\" is already used. ";
-	public static final String PHONE_NUMBER_USED = "\"phone number\" is already used. ";
+	public static final String EMAIL_USED = "E-mail adresa je već u upotrebi.";
+	public static final String EMAIL_FORMAT = "Format e-mail adrese nije validan.";
+	public static final String USERNAME_USED = "Korisničko ime je već u upotrebi.";
+	public static final String PHONE_NUMBER_USED = "Telefonski broj je već u upotrebi.";
 	
 	public static final String UNKNOWN_CLAIMER_OFFER = "\"claimerOffer\" is unknown. ";
 	public static final String UNKNOWN_DRIVER_OFFER = "\"driverOffer\" is unknown. ";

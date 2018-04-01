@@ -156,7 +156,7 @@ public class UserService
 
 		Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
 		constraintViolations.iterator().forEachRemaining(constrain -> errorList
-				.add("\"" + constrain.getPropertyPath() + "\" " + constrain.getMessage() + ". "));
+				.add(constrain.getMessage()));
 
 		if (userRepository.findByEmail(user.getEmail()) != null)
 			errorList.add(Messages.EMAIL_USED);
