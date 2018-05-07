@@ -1,8 +1,12 @@
 package com.prenosrobe.service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.prenosrobe.data.Area;
 import com.prenosrobe.data.DriverOffer;
+import com.prenosrobe.data.DriverOfferStation;
 import com.prenosrobe.data.OfferStatus;
 import com.prenosrobe.data.Station;
 import com.prenosrobe.data.User;
@@ -23,6 +28,7 @@ import com.prenosrobe.exception.DataNotSavedException;
 import com.prenosrobe.exception.Messages;
 import com.prenosrobe.repositories.AreaRepository;
 import com.prenosrobe.repositories.DriverOfferRepository;
+import com.prenosrobe.repositories.DriverOfferStationRepository;
 import com.prenosrobe.repositories.OfferStatusRepository;
 import com.prenosrobe.repositories.StationRepository;
 import com.prenosrobe.repositories.UserRepository;
@@ -53,6 +59,9 @@ public class DriverOfferService
 
 	@Autowired
 	private StationRepository stationRepository;
+
+	@Autowired
+	private DriverOfferStationRepository driverOfferStationRepository;
 
 	@Autowired
 	private AreaRepository areaRepository;
@@ -118,6 +127,8 @@ public class DriverOfferService
 			driverOffers.iterator().forEachRemaining(driverOffer -> myDriverOffer.add(driverOffer));
 		}
 
+		myDriverOffer.sort(new SortByID());
+
 		return myDriverOffer;
 	}
 
@@ -149,13 +160,89 @@ public class DriverOfferService
 	}
 
 	/**
-	 * Get the all driver offers.
+	 * Get the all valid driver offers.
 	 *
 	 * @return driver offers list of all driver offers
 	 */
 	public List<DriverOffer> getAll()
 	{
-		return driverOfferRepository.findAll();
+		List<DriverOffer> allOffers = driverOfferRepository.findAll();
+		Date currentDate = getCurrentDate();
+
+		List<DriverOffer> validOffers = allOffers.stream()
+				.filter(offer -> !offer.getDate().before(currentDate)).collect(Collectors.toList());
+
+		// Sort data by data
+		validOffers.sort(new SortByID());
+
+		return validOffers;
+	}
+
+	/**
+	 * Get the driver offers by locations and date. Date can be null, but locations shouldn't be null.
+	 *
+	 * @param departureLocation departure location
+	 * @param arrivalLocation arrival location
+	 * @param date date
+	 * @return driver offers by locations and date
+	 */
+	public List<DriverOffer> getDriverOffersByLocationsAndDate(final String departureLocation,
+			final String arrivalLocation, final Date date)
+	{
+		List<DriverOffer> allDriverOffers = getAll();
+		List<DriverOffer> foundOffers = new ArrayList<>();
+
+		allDriverOffers.forEach(offer -> {
+			Optional<DriverOfferStation> optionalDepartureStation = offer.getDriverOfferStations()
+					.stream()
+					.filter(station -> station.getStation().getName().equals(departureLocation))
+					.findFirst();
+			Optional<DriverOfferStation> optionalArrivalStation = offer.getDriverOfferStations()
+					.stream()
+					.filter(station -> station.getStation().getName().equals(arrivalLocation))
+					.findFirst();
+
+			if (optionalDepartureStation.isPresent() && optionalArrivalStation.isPresent())
+			{
+				DriverOfferStation departureStation = optionalDepartureStation.get();
+				DriverOfferStation arrivalStation = optionalArrivalStation.get();
+
+				if (departureStation.getSerialNumber() < arrivalStation.getSerialNumber())
+					foundOffers.add(offer);
+			}
+		});
+
+		if (date != null)
+			return foundOffers.stream().filter(offer -> offer.getDate().compareTo(date) == 0)
+					.collect(Collectors.toList());
+
+		return foundOffers;
+	}
+
+	/**
+	 * Comparator for sorting driver offers
+	 * by theirs IDs. Offers with bigger IDs will be first ones. 
+	 */
+	public class SortByID implements Comparator<DriverOffer>
+	{
+		public int compare(DriverOffer offer1, DriverOffer offer2)
+		{
+			return offer2.getId() - offer1.getId();
+		}
+	}
+
+	/**
+	 * Get the current date without hours, minutes and seconds. Use this method
+	 * for validating offers.
+	 *
+	 * @return current date
+	 */
+	@SuppressWarnings("deprecation")
+	private Date getCurrentDate()
+	{
+		Date currentDate = new Date();
+
+		return new Date(currentDate.getYear(), currentDate.getMonth(), currentDate.getDate());
 	}
 
 	/**
@@ -337,12 +424,45 @@ public class DriverOfferService
 	}
 
 	/**
-	 * Add the valid stations into base and remove invalid from passed driverOffer.
+	 * Add the valid stations into base from passed driverOffer.
 	 *
 	 * @param driverOffer the driver offer
 	 */
 	private void addValidStationsIntoBase(DriverOffer driverOffer)
 	{
-		// TODO: implementirati logiku za dodavanje stanica u bazu!!!!!!!!!!!!!
+		List<DriverOfferStation> validDriverOfferStations = new ArrayList<>();
+
+		for (DriverOfferStation driverOfferStation : driverOffer.getDriverOfferStations())
+		{
+			driverOfferStation.setDriverOfferId(driverOffer.getId());
+
+			Station station = driverOfferStation.getStation();
+			Station foundStation = stationRepository.findByName(station.getName());
+
+			// Save unknown station
+			if (foundStation == null)
+			{
+				try
+				{
+					foundStation = stationRepository.save(station);
+				} catch (Exception e)
+				{
+					throw new DataNotSavedException(e.getMessage(), e);
+				}
+			}
+
+			try
+			{
+				driverOfferStation.setStation(foundStation);
+				DriverOfferStation validDriverOfferStation = driverOfferStationRepository
+						.save(driverOfferStation);
+				validDriverOfferStations.add(validDriverOfferStation);
+			} catch (Exception e)
+			{
+				throw new DataNotSavedException(e.getMessage(), e);
+			}
+		}
+
+		driverOffer.setDriverOfferStations(validDriverOfferStations);
 	}
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.prenosrobe.data.DriverOffer;
 import com.prenosrobe.data.UserVehicle;
+import com.prenosrobe.dto.HomeSearchDto;
 import com.prenosrobe.dto.RestRespondeDto;
 import com.prenosrobe.exception.DataNotSavedException;
 import com.prenosrobe.exception.Messages;
@@ -97,6 +98,30 @@ public class DriverOfferController
 					driverOfferService.getMyDriverOffers(token)), HttpStatus.OK);
 		}
 		return ResponseEntityUtil.createResponseEntityForbidden();
+	}
+
+	/**
+	 * Get the driver offers by locations and date. HomeSearchDto field date can be null, 
+	 * but locations shouldn't be null.
+	 *
+	 * @param homeSearchDto homeSearchDto
+	 * @return driver offers by locations and date
+	 */
+	@PostMapping("/driverOffer/homeSearch")
+	public ResponseEntity<RestRespondeDto> getDriverOffersByLocationsAndDate(
+			@RequestBody HomeSearchDto homeSearchDto)
+	{
+		String departureLocation = homeSearchDto.getDepartureLocation();
+		String arrivalLocation = homeSearchDto.getArrivalLocation();
+
+		if (departureLocation == null || departureLocation.isEmpty() || arrivalLocation == null
+				|| arrivalLocation.isEmpty())
+			return ResponseEntityUtil.createResponseEntityNoContent(Messages.INVALID_DATA);
+
+		return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(),
+				driverOfferService.getDriverOffersByLocationsAndDate(departureLocation,
+						arrivalLocation, homeSearchDto.getDate())),
+				HttpStatus.OK);
 	}
 
 	/**

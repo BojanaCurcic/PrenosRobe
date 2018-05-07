@@ -24,7 +24,6 @@ public class DriverOfferStation implements Serializable
 	@Column(name = "driver_offer_station_id")
 	private Integer id;
 
-	@NotNull
 	@Column(name = "driver_offer_id")
 	private Integer driverOfferId;
 

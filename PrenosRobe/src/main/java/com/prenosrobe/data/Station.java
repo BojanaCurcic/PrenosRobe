@@ -11,7 +11,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -37,7 +36,6 @@ public class Station implements Serializable
 	private double yCoordinate;
 
 	@Valid
-	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "area_id", referencedColumnName = "area_id")
 	private Area area;

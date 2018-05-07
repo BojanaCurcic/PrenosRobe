@@ -1,6 +1,7 @@
 package com.prenosrobe.service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -94,8 +95,10 @@ public class ClaimerOfferService
 	public List<ClaimerOffer> myClaimerOffers(final String token)
 	{
 		User user = userRepository.findByToken(token);
-
-		return claimerOfferRepository.findByUserId(user.getId());
+		List<ClaimerOffer> claimerOffers = claimerOfferRepository.findByUserId(user.getId());
+		claimerOffers.sort(new SortByID());
+		
+		return claimerOffers;
 	}
 
 	/**
@@ -107,9 +110,26 @@ public class ClaimerOfferService
 	public List<ClaimerOffer> getClaimerOffersByDriverOfferId(final int driverOfferId)
 	{
 		if (driverOfferRepository.findOne(driverOfferId) != null)
-			return claimerOfferRepository.findByDriverOfferId(driverOfferId);
+		{
+			List<ClaimerOffer> claimerOffers = claimerOfferRepository.findByDriverOfferId(driverOfferId);
+			claimerOffers.sort(new SortByID());
+			
+			return claimerOffers;
+		}
 
 		return null;
+	}
+	
+	/**
+	 * Comparator for sorting claimer offers
+	 * by theirs IDs. Offers with bigger IDs will be first ones. 
+	 */
+	public class SortByID implements Comparator<ClaimerOffer>
+	{
+	    public int compare(ClaimerOffer a, ClaimerOffer b)
+	    { 
+	    	return b.getId() - a.getId();
+	    }
 	}
 
 	/**

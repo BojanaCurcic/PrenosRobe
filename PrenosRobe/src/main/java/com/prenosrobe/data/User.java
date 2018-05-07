@@ -68,7 +68,6 @@ public class User implements Serializable
 	@Column(name = "photo")
 	private String photo;
 
-	// TODO: preimenuj token u neko smislenije ime
 	@Column(name = "token")
 	private String token;
 
