@@ -21,6 +21,11 @@ import com.prenosrobe.exception.Messages;
 import com.prenosrobe.service.UserService;
 import com.prenosrobe.util.ResponseEntityUtil;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 public class UserController
 {
@@ -91,8 +96,13 @@ public class UserController
 	 * @return user user with all its information
 	 */
 	@GetMapping("/user/{id}")
-	public ResponseEntity<RestRespondeDto> getUserById(@PathVariable Long id,
-			@RequestHeader(value = "token") String token)
+	@ApiOperation("Get the user by user id.")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "OK", response = RestRespondeDto.class),
+			@ApiResponse(code = 204, message = Messages.UNKNOWN_USER) })
+	public ResponseEntity<RestRespondeDto> getUserById(
+			@ApiParam(value = "user id", required = true) @PathVariable Long id,
+			@ApiParam(value = "token used for user identification", required = true) @RequestHeader(value = "token") String token)
 	{
 		if (userService.authentication(token))
 		{
@@ -139,7 +149,12 @@ public class UserController
 	 * @param token token used for user identification
 	 * @param impression impression
 	 */
-	@PostMapping("impression")
+	@PostMapping("/impression")
+	@ApiOperation(value = "Add the impression.", notes = "Add the impression. Parameter impression should have set fields 'userId', "
+			+ "'deliveredOnTime', 'pickedOnTime', 'comment' and 'driver'. Field 'driver' defines if this impression is related to a "
+			+ "driver (when its values is true) or to a claimer (when its value is false). If field 'driver' is true, impression should "
+			+ "also have set fields 'deliveredUndamaged' and 'delivered', otherwise field 'correctlyPaid' should be set. All of these "
+			+ "fields must have values between 1 and 10.")
 	public ResponseEntity<RestRespondeDto> addImpression(
 			@RequestHeader(value = "token") String token, @RequestBody Impression impression)
 	{
@@ -161,6 +176,7 @@ public class UserController
 	 * @return languages list of all supported languages
 	 */
 	@GetMapping("/languages")
+	@ApiOperation("Get the list of all supported languages.")
 	public ResponseEntity<RestRespondeDto> getAllLanguages()
 	{
 		return new ResponseEntity<>(
