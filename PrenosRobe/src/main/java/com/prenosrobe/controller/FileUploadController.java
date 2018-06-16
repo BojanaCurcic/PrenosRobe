@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,10 +18,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
+import com.prenosrobe.dto.RestRespondeDto;
 import com.prenosrobe.exception.Messages;
-import com.prenosrobe.exception.StorageFileNotFoundException;
 import com.prenosrobe.service.UserService;
 import com.prenosrobe.storage.StorageService;
+import com.prenosrobe.util.ResponseEntityUtil;
 
 @Controller
 public class FileUploadController
@@ -41,8 +41,8 @@ public class FileUploadController
 	 * @return list of stored files
 	 */
 	@GetMapping("/files")
-	public ResponseEntity<Model> listStoredFiles(@RequestHeader(value = "token") String token,
-			Model filesPlaceholder)
+	public ResponseEntity<RestRespondeDto> listStoredFiles(
+			@RequestHeader(value = "token") String token, Model filesPlaceholder)
 	{
 		if (userService.authentication(token))
 		{
@@ -51,9 +51,10 @@ public class FileUploadController
 							"getFile", token, path.getFileName().toString()).build().toString())
 					.collect(Collectors.toList()));
 
-			return new ResponseEntity<>(filesPlaceholder, HttpStatus.OK);
+			return new ResponseEntity<>(
+					new RestRespondeDto(HttpStatus.OK.value(), filesPlaceholder), HttpStatus.OK);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -65,16 +66,21 @@ public class FileUploadController
 	 */
 	@GetMapping("/files/{filename:.+}")
 	@ResponseBody
-	public ResponseEntity<Resource> getFile(@RequestHeader(value = "token") String token,
+	public ResponseEntity<RestRespondeDto> getFile(@RequestHeader(value = "token") String token,
 			@PathVariable String filename)
 	{
 		if (userService.authentication(token))
 		{
 			Resource file = storageService.loadAsResource(filename);
-			return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-					"attachment; filename=\"" + file.getFilename() + "\"").body(file);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(HttpHeaders.CONTENT_DISPOSITION,
+					"attachment; filename=\"" + file.getFilename() + "\"");
+
+			// TODO: proveri da li radi sa App, posto Postman zahteva da se prosledi iskljucivo file
+			return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(), file), headers,
+					HttpStatus.OK);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 
 	/**
@@ -84,34 +90,18 @@ public class FileUploadController
 	 * @param file file
 	 */
 	@PostMapping("/upload")
-	public ResponseEntity<String> uploadFile(@RequestHeader(value = "token") String token,
+	public ResponseEntity<RestRespondeDto> uploadFile(@RequestHeader(value = "token") String token,
 			@RequestParam("file") MultipartFile file)
 	{
 		if (userService.authentication(token))
 		{
-			try
-			{
-				storageService.upload(file);
-			} catch (Exception e)
-			{
-				return new ResponseEntity<>(Messages.NOT_UPLOADED + file.getOriginalFilename(),
-						HttpStatus.BAD_REQUEST);
-			}
+			storageService.upload(file);
 
-			return new ResponseEntity<>(Messages.SUCCESSFULLY_UPLOADED + file.getOriginalFilename(),
+			return new ResponseEntity<>(
+					new RestRespondeDto(HttpStatus.OK.value(),
+							Messages.SUCCESSFULLY_UPLOADED + file.getOriginalFilename()),
 					HttpStatus.OK);
 		}
-		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-	}
-
-	/**
-	 * Handle storage file not found.
-	 *
-	 * @param exc exception
-	 */
-	@ExceptionHandler(StorageFileNotFoundException.class)
-	public ResponseEntity<String> handleStorageFileNotFound(StorageFileNotFoundException exc)
-	{
-		return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);
+		return ResponseEntityUtil.createResponseEntityForbidden();
 	}
 }

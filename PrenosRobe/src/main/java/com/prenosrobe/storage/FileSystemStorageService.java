@@ -54,6 +54,9 @@ public class FileSystemStorageService implements StorageService
 		} catch (IOException e)
 		{
 			throw new ApplicationException(Messages.STORE_FILE + filename, e);
+		} catch (Exception e)
+		{
+			throw new StorageFileNotFoundException(Messages.NOT_UPLOADED + file.getOriginalFilename());
 		}
 	}
 

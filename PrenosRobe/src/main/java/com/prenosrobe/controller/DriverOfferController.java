@@ -1,12 +1,10 @@
 package com.prenosrobe.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +16,6 @@ import com.prenosrobe.data.DriverOffer;
 import com.prenosrobe.data.UserVehicle;
 import com.prenosrobe.dto.HomeSearchDto;
 import com.prenosrobe.dto.RestRespondeDto;
-import com.prenosrobe.exception.DataNotSavedException;
 import com.prenosrobe.exception.Messages;
 import com.prenosrobe.service.DriverOfferService;
 import com.prenosrobe.service.UserService;
@@ -245,19 +242,5 @@ public class DriverOfferController
 		return new ResponseEntity<>(
 				new RestRespondeDto(HttpStatus.OK.value(), driverOfferService.getAllAreas()),
 				HttpStatus.OK);
-	}
-
-	/**
-	 * Handle data not saved.
-	 *
-	 * @param exc exception
-	 */
-	@ExceptionHandler(DataNotSavedException.class)
-	public ResponseEntity<RestRespondeDto> handleDataNotSaved(DataNotSavedException exc)
-	{
-		List<String> errorList = new ArrayList<>();
-		errorList.add(exc.getMessage());
-
-		return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
 	}
 }

@@ -1,12 +1,10 @@
 package com.prenosrobe.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.prenosrobe.data.ClaimerOffer;
 import com.prenosrobe.dto.RestRespondeDto;
-import com.prenosrobe.exception.DataNotSavedException;
 import com.prenosrobe.exception.Messages;
 import com.prenosrobe.service.ClaimerOfferService;
 import com.prenosrobe.service.UserService;
@@ -142,19 +139,5 @@ public class ClaimerOfferController
 			return ResponseEntityUtil.createResponseEntityAlreadyReported(errorList);
 		}
 		return ResponseEntityUtil.createResponseEntityForbidden();
-	}
-
-	/**
-	 * Handle data not saved.
-	 *
-	 * @param exc exception
-	 */
-	@ExceptionHandler(DataNotSavedException.class)
-	public ResponseEntity<RestRespondeDto> handleDataNotSaved(DataNotSavedException exc)
-	{
-		List<String> errorList = new ArrayList<>();
-		errorList.add(exc.getMessage());
-
-		return ResponseEntityUtil.createResponseEntityBadRequest(errorList);
 	}
 }
