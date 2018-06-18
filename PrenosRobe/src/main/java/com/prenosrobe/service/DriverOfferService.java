@@ -24,6 +24,7 @@ import com.prenosrobe.data.User;
 import com.prenosrobe.data.UserVehicle;
 import com.prenosrobe.data.Vehicle;
 import com.prenosrobe.data.VehicleType;
+import com.prenosrobe.dto.HomeSearchDto;
 import com.prenosrobe.exception.DataNotSavedException;
 import com.prenosrobe.exception.Messages;
 import com.prenosrobe.repositories.AreaRepository;
@@ -186,20 +187,19 @@ public class DriverOfferService
 	 * @param date date
 	 * @return driver offers by locations and date
 	 */
-	public List<DriverOffer> getDriverOffersByLocationsAndDate(final String departureLocation,
-			final String arrivalLocation, final Date date)
+	public List<DriverOffer> getDriverOffersByLocationsAndDate(final HomeSearchDto homeSearchDto)
 	{
 		List<DriverOffer> allDriverOffers = getAll();
 		List<DriverOffer> foundOffers = new ArrayList<>();
 
 		allDriverOffers.forEach(offer -> {
 			Optional<DriverOfferStation> optionalDepartureStation = offer.getDriverOfferStations()
-					.stream()
-					.filter(station -> station.getStation().getName().equals(departureLocation))
+					.stream().filter(station -> station.getStation().getName()
+							.equals(homeSearchDto.getDepartureLocation()))
 					.findFirst();
 			Optional<DriverOfferStation> optionalArrivalStation = offer.getDriverOfferStations()
-					.stream()
-					.filter(station -> station.getStation().getName().equals(arrivalLocation))
+					.stream().filter(station -> station.getStation().getName()
+							.equals(homeSearchDto.getArrivalLocation()))
 					.findFirst();
 
 			if (optionalDepartureStation.isPresent() && optionalArrivalStation.isPresent())
@@ -207,13 +207,15 @@ public class DriverOfferService
 				DriverOfferStation departureStation = optionalDepartureStation.get();
 				DriverOfferStation arrivalStation = optionalArrivalStation.get();
 
+				// Making sure that this offer is in right direction
 				if (departureStation.getSerialNumber() < arrivalStation.getSerialNumber())
 					foundOffers.add(offer);
 			}
 		});
 
-		if (date != null)
-			return foundOffers.stream().filter(offer -> offer.getDate().compareTo(date) == 0)
+		if (homeSearchDto.getDate() != null)
+			return foundOffers.stream()
+					.filter(offer -> offer.getDate().compareTo(homeSearchDto.getDate()) == 0)
 					.collect(Collectors.toList());
 
 		return foundOffers;
@@ -243,6 +245,24 @@ public class DriverOfferService
 		Date currentDate = new Date();
 
 		return new Date(currentDate.getYear(), currentDate.getMonth(), currentDate.getDate());
+	}
+
+	/**
+	 * Validate homeSearchDto.
+	 *
+	 * @param homeSearchDto home search dto
+	 * @return error list
+	 */
+	public List<String> validateHomeSearchDto(HomeSearchDto homeSearchDto)
+	{
+		List<String> errorList = new ArrayList<>();
+
+		Set<ConstraintViolation<HomeSearchDto>> constraintViolations = validator
+				.validate(homeSearchDto);
+		constraintViolations.iterator().forEachRemaining(constrain -> errorList
+				.add("\"" + constrain.getPropertyPath() + "\" " + constrain.getMessage() + ". "));
+
+		return errorList;
 	}
 
 	/**

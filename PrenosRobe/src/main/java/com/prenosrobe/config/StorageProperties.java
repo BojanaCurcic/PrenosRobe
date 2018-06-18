@@ -1,4 +1,4 @@
-package com.prenosrobe.storage;
+package com.prenosrobe.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

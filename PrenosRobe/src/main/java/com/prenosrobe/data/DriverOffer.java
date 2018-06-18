@@ -6,6 +6,7 @@ package com.prenosrobe.data;
 import java.io.Serializable;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -246,6 +247,7 @@ public class DriverOffer implements Serializable
 	 */
 	public List<DriverOfferStation> getDriverOfferStations()
 	{
+		this.driverOfferStations.sort(new SortByStationNumber());
 		return driverOfferStations;
 	}
 
@@ -257,5 +259,18 @@ public class DriverOffer implements Serializable
 	public void setDriverOfferStations(final List<DriverOfferStation> driverOfferStations)
 	{
 		this.driverOfferStations = driverOfferStations;
+		this.driverOfferStations.sort(new SortByStationNumber());
+	}
+	
+	/**
+	 * Comparator for sorting driver offer stations
+	 * by theirs station numbers. Stations with lower station numbers will be first ones. 
+	 */
+	private class SortByStationNumber implements Comparator<DriverOfferStation>
+	{
+		public int compare(final DriverOfferStation station1, final DriverOfferStation station2)
+		{
+			return station1.getId() - station2.getId();
+		}
 	}
 }

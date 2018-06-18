@@ -42,6 +42,8 @@ public class UserService
 	private ImpressionRepository impressionRepository;
 
 	private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+	
+	
 
 	/**
 	 * Register the user. Parameter user should have set fields 'name', 'surname', 
@@ -95,6 +97,7 @@ public class UserService
 			try
 			{
 				// TODO: promeni token svaki put kad se loguje
+				foundUser.setToken(passwordEncoder.encode(user.getUsername() + ":" + user.getPassword()));
 				foundUser.setActive(true);
 				userRepository.save(foundUser);
 
@@ -117,6 +120,7 @@ public class UserService
 		User foundUser = userRepository.findByToken(token);
 		if (foundUser != null)
 		{
+			foundUser.setToken(Messages.INVALID_TOKEN);
 			foundUser.setActive(false);
 			try
 			{
@@ -141,7 +145,7 @@ public class UserService
 	{
 		User user = userRepository.findByToken(token);
 
-		return user != null && token.equals(user.getToken());
+		return user != null && !token.equals(Messages.INVALID_TOKEN) && token.equals(user.getToken());
 	}
 
 	/**

@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import com.prenosrobe.storage.StorageProperties;
-import com.prenosrobe.storage.StorageService;
+import com.prenosrobe.config.StorageProperties;
+import com.prenosrobe.service.FileSystemStorageService;
 
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
@@ -19,7 +19,7 @@ public class App
 	}
 
 	@Bean
-	CommandLineRunner init(StorageService storageService)
+	CommandLineRunner init(FileSystemStorageService storageService)
 	{
 		return args -> storageService.init();
 	}

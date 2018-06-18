@@ -108,16 +108,13 @@ public class DriverOfferController
 	public ResponseEntity<RestRespondeDto> getDriverOffersByLocationsAndDate(
 			@RequestBody HomeSearchDto homeSearchDto)
 	{
-		String departureLocation = homeSearchDto.getDepartureLocation();
-		String arrivalLocation = homeSearchDto.getArrivalLocation();
+		List<String> errorList = driverOfferService.validateHomeSearchDto(homeSearchDto);
+		if (!errorList.isEmpty())
+			return ResponseEntityUtil.createResponseEntityAlreadyReported(errorList);
 
-		if (departureLocation == null || departureLocation.isEmpty() || arrivalLocation == null
-				|| arrivalLocation.isEmpty())
-			return ResponseEntityUtil.createResponseEntityNoContent(Messages.INVALID_DATA);
-
-		return new ResponseEntity<>(new RestRespondeDto(HttpStatus.OK.value(),
-				driverOfferService.getDriverOffersByLocationsAndDate(departureLocation,
-						arrivalLocation, homeSearchDto.getDate())),
+		return new ResponseEntity<>(
+				new RestRespondeDto(HttpStatus.OK.value(),
+						driverOfferService.getDriverOffersByLocationsAndDate(homeSearchDto)),
 				HttpStatus.OK);
 	}
 

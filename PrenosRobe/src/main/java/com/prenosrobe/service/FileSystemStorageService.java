@@ -1,4 +1,4 @@
-package com.prenosrobe.storage;
+package com.prenosrobe.service;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -15,12 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.prenosrobe.config.StorageProperties;
 import com.prenosrobe.exception.ApplicationException;
 import com.prenosrobe.exception.Messages;
 import com.prenosrobe.exception.StorageFileNotFoundException;
 
 @Service
-public class FileSystemStorageService implements StorageService
+public class FileSystemStorageService
 {
 	private final Path rootLocation;
 
@@ -31,12 +32,11 @@ public class FileSystemStorageService implements StorageService
 	}
 
 	/**
-	 * Upload the file.
+	 * Store the file.
 	 *
 	 * @param file file
 	 */
-	@Override
-	public void upload(MultipartFile file)
+	public void store(MultipartFile file)
 	{
 		String filename = StringUtils.cleanPath(file.getOriginalFilename());
 		try
@@ -56,14 +56,14 @@ public class FileSystemStorageService implements StorageService
 			throw new ApplicationException(Messages.STORE_FILE + filename, e);
 		} catch (Exception e)
 		{
-			throw new StorageFileNotFoundException(Messages.NOT_UPLOADED + file.getOriginalFilename());
+			throw new StorageFileNotFoundException(
+					Messages.NOT_STORED + file.getOriginalFilename());
 		}
 	}
 
 	/**
 	 * Load all stored files from root location.
 	 */
-	@Override
 	public Stream<Path> loadAll()
 	{
 		try
@@ -82,7 +82,6 @@ public class FileSystemStorageService implements StorageService
 	 * @param filename filename
 	 * @return file path
 	 */
-	@Override
 	public Path load(String filename)
 	{
 		return rootLocation.resolve(filename);
@@ -94,7 +93,6 @@ public class FileSystemStorageService implements StorageService
 	 * @param filename filename
 	 * @return stored file 
 	 */
-	@Override
 	public Resource loadAsResource(String filename)
 	{
 		try
@@ -118,7 +116,6 @@ public class FileSystemStorageService implements StorageService
 	/**
 	 * Init root location.
 	 */
-	@Override
 	public void init()
 	{
 		try

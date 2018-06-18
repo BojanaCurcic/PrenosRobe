@@ -3,6 +3,7 @@ package com.prenosrobe.exception;
 public class Messages
 {
 	public static final String INVALID_DATA = "Invalid data.";
+	public static final String INVALID_TOKEN = "Invalid token";
 
 	public static final String EMAIL_USED = "E-mail adresa je već u upotrebi.";
 	public static final String EMAIL_FORMAT = "Format e-mail adrese nije validan.";
@@ -24,8 +25,8 @@ public class Messages
 	public static final String DELIVERED_UNDAMAGED_IS_NULL = "\"deliveredUndamaged\" may not be null. ";
 	public static final String CORRECTLY_PAID_IS_NULL = "\"correctlyPaid\" may not be null. ";
 
-	public static final String SUCCESSFULLY_UPLOADED = "Successfully uploaded file: ";
-	public static final String NOT_UPLOADED = "Not uploaded file: ";
+	public static final String SUCCESSFULLY_STORED = "Successfully stored file: ";
+	public static final String NOT_STORED = "Not stored file: ";
 
 	public static final String INIT_STORAGE = "Could not initialize storage. ";
 	public static final String STORE_FILE = "Failed to store file: ";
