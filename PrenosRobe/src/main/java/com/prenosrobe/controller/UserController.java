@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.prenosrobe.data.Impression;
@@ -27,6 +28,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
+@RequestMapping("/api")
 public class UserController
 {
 	@Autowired
@@ -42,7 +44,8 @@ public class UserController
 	 * @return user user with all its information
 	 */
 	@PostMapping("/user/register")
-	public ResponseEntity<RestRespondeDto> register(@RequestBody User user, HttpServletRequest request)
+	public ResponseEntity<RestRespondeDto> register(@RequestBody User user,
+			HttpServletRequest request)
 	{
 		List<String> errorList = userService.register(user);
 		if (errorList.isEmpty())
@@ -156,7 +159,8 @@ public class UserController
 			+ "also have set fields 'deliveredUndamaged' and 'delivered', otherwise field 'correctlyPaid' should be set. All of these "
 			+ "fields must have values between 1 and 10.")
 	public ResponseEntity<RestRespondeDto> addImpression(
-			@RequestHeader(value = "token") String token, @RequestBody Impression impression)
+			@ApiParam(value = "Token used for user identification.", required = true) @RequestHeader(value = "token") String token,
+			@ApiParam(value = "The impression.", required = true) @RequestBody Impression impression)
 	{
 		if (userService.authentication(token))
 		{
